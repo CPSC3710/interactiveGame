@@ -4,7 +4,9 @@
 // Implementation notes:
 //  #TODO
 //------------------------------------------------------------------------------
-Street::Street()
+Street::Street(
+	const Coordinate3D& coordinate) :
+	Object(coordinate)
 {
 
 }

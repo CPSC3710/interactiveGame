@@ -15,9 +15,10 @@ public:
 	// FullName:  Robot::Robot
 	// Access:    public 
 	// Returns:   None
-	// Parameter: None
+	// Parameter: const Coordinate3D& coordinate
 	//--------------------------------------------------------------------------
-	Robot();
+	Robot(
+		const Coordinate3D& coordinate);
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description

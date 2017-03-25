@@ -1,11 +1,24 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <cstdint>
+#include "coordinate3d.h"
 
 class Object
 {
 public:
+
+	//-------------------------------------------------------------- constructor
+	// Brief Description
+	//  Constructor for an Object
+	//
+	// Method:    Object
+	// FullName:  Object::Object
+	// Access:    public 
+	// Returns:   None
+	// Parameter: const Coordinate3D& coordinate
+	//--------------------------------------------------------------------------
+	Object(
+		const Coordinate3D& coordinate);
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description
@@ -19,9 +32,7 @@ public:
 	virtual void draw() = 0;
 
 protected:
-	int64_t m_xCoordinate;
-	int64_t m_yCoordinate;
-	int64_t m_zCoordinate;
+	Coordinate3D m_coordinate3D;
 
 private:
 

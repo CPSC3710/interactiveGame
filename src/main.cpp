@@ -17,13 +17,14 @@
 
 // Project includes
 #include "robot.h"
+#include "coordinate3d.h"
 
 // Global Variables
 int WINDOW_ID;
 int WINDOW_WIDTH = 1024;
 int WINDOW_HEIGHT = 600;
 
-Robot robot;
+Robot robot(Coordinate3D(0, 0, 0));
 
 GLdouble eX, eY, eZ, atX, atY, atZ;
 
@@ -70,7 +71,9 @@ int main(int argc, char** argv)
 //  Initializes various OpenGL settings and any other variables necessary
 //  for the game to begin looping
 //------------------------------------------------------------------------------
-void init(int width, int height)
+void init(
+	int width,
+	int height)
 {
 	// Eye at Origin and looking -z axis
 	eX = 0; eY = 0; eZ = 0; atX = 0; atY = 0; atZ = -1;
@@ -100,7 +103,7 @@ void init(int width, int height)
 //  Essentially the draw function, a call to this represents a frame that will
 //  be displayed to the screen.
 //------------------------------------------------------------------------------
-void renderSceneCallback(void)
+void renderSceneCallback()
 {
 	// Clear the color and depth buffers.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -113,6 +116,9 @@ void renderSceneCallback(void)
 	glTranslatef(0.0f, 0.0f, -10.0f);
 	glutSolidSphere(1, 20, 20);
 
+	// Test
+	robot.draw();
+
 	glutSwapBuffers();
 }
 
@@ -122,7 +128,9 @@ void renderSceneCallback(void)
 //  that the window is at least 1 pixel tall at the minimum to ensure a
 //  crash doesn't happen.
 //------------------------------------------------------------------------------
-void resizeSceneCallback(int width, int height)
+void resizeSceneCallback(
+	int width, 
+	int height)
 {
 	if(height == 0)
 	{
@@ -151,7 +159,10 @@ void resizeSceneCallback(int width, int height)
 //  Called when any normal keyboard event occurs. One of the functions that is 
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
-void keyboardCallback(unsigned char key, int x, int y)
+void keyboardCallback(
+	unsigned char key, 
+	int x, 
+	int y)
 {
 	switch(key)
 	{
@@ -167,7 +178,10 @@ void keyboardCallback(unsigned char key, int x, int y)
 //  that is used to process user inputs and apply changes to the state of the
 //  game.
 //------------------------------------------------------------------------------
-void specialKeysCallback(int key, int x, int y)
+void specialKeysCallback(
+	int key,
+	int x, 
+	int y)
 {
 	switch(key)
 	{
@@ -182,7 +196,11 @@ void specialKeysCallback(int key, int x, int y)
 //  Called when any mouse event occurs. This is one of the functions that is 
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
-void mouseCallback(int button, int state, int x, int y)
+void mouseCallback(
+	int button, 
+	int state,
+	int x, 
+	int y)
 {
 	switch(button)
 	{

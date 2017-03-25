@@ -15,9 +15,10 @@ public:
 	// FullName:  Cylinder::Cylinder
 	// Access:    public 
 	// Returns:   None
-	// Parameter: None
+	// Parameter: const Coordinate3D& coordinate
 	//--------------------------------------------------------------------------
-	Cylinder();
+	Cylinder(
+		const Coordinate3D& coordinate);
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description

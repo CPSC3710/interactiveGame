@@ -1,10 +1,12 @@
 #include "cylinder.h"
 
-//------------------------------------------------------------------------- draw
+//------------------------------------------------------------------ constructor
 // Implementation notes:
 //  #TODO
 //------------------------------------------------------------------------------
-Cylinder::Cylinder()
+Cylinder::Cylinder(
+	const Coordinate3D& coordinate) :
+	Object(coordinate)
 {
 
 }

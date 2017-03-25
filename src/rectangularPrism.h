@@ -15,9 +15,10 @@ public:
 	// FullName:  RectangularPrism::RectangularPrism
 	// Access:    public 
 	// Returns:   None
-	// Parameter: None
+	// Parameter: const Coordinate3D& coordinate
 	//--------------------------------------------------------------------------
-	RectangularPrism();
+	RectangularPrism(
+		const Coordinate3D& coordinate);
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description

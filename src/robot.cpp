@@ -4,7 +4,9 @@
 // Implementation notes:
 //  #TODO
 //------------------------------------------------------------------------------
-Robot::Robot()
+Robot::Robot(
+	const Coordinate3D& coordinate) :
+	Object(coordinate)
 {
 
 }

@@ -4,7 +4,9 @@
 // Implementation notes:
 //  #TODO
 //------------------------------------------------------------------------------
-RectangularPrism::RectangularPrism()
+RectangularPrism::RectangularPrism(
+	const Coordinate3D& coordinate) :
+	Object(coordinate)
 {
 
 }
