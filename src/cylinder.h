@@ -6,7 +6,28 @@
 class Cylinder : public Object
 {
 public:
+
+	//-------------------------------------------------------------- constructor
+	// Brief Description
+	//  Constructor for a Cylinder
+	//
+	// Method:    Cylinder
+	// FullName:  Cylinder::Cylinder
+	// Access:    public 
+	// Returns:   None
+	// Parameter: None
+	//--------------------------------------------------------------------------
 	Cylinder();
+
+	//--------------------------------------------------------------------- draw
+	// Brief Description
+	//  Draws the Cylinder to the screen at its X Y Z coordinates.
+	//
+	// Method:    draw
+	// FullName:  Cylinder::draw
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
 	void draw();
 
 private:

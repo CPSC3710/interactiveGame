@@ -65,6 +65,11 @@ int main(int argc, char** argv)
 	glutMainLoop();
 }
 
+//------------------------------------------------------------------------- init
+// Implementation notes:
+//  Initializes various OpenGL settings and any other variables necessary
+//  for the game to begin looping
+//------------------------------------------------------------------------------
 void init(int width, int height)
 {
 	// Eye at Origin and looking -z axis
@@ -90,6 +95,11 @@ void init(int width, int height)
 	resizeSceneCallback(width, height);
 }
 
+//---------------------------------------------------------- renderSceneCallback
+// Implementation notes:
+//  Essentially the draw function, a call to this represents a frame that will
+//  be displayed to the screen.
+//------------------------------------------------------------------------------
 void renderSceneCallback(void)
 {
 	// Clear the color and depth buffers.
@@ -106,6 +116,12 @@ void renderSceneCallback(void)
 	glutSwapBuffers();
 }
 
+//---------------------------------------------------------- renderSceneCallback
+// Implementation notes:
+//  Called when the window is resized. Resets various settings and ensures
+//  that the window is at least 1 pixel tall at the minimum to ensure a
+//  crash doesn't happen.
+//------------------------------------------------------------------------------
 void resizeSceneCallback(int width, int height)
 {
 	if(height == 0)
@@ -130,6 +146,11 @@ void resizeSceneCallback(int width, int height)
 	WINDOW_HEIGHT = height;
 }
 
+//------------------------------------------------------------- keyboardCallback
+// Implementation notes:
+//  Called when any normal keyboard event occurs. One of the functions that is 
+//  used to process user inputs and apply changes to the state of the game.
+//------------------------------------------------------------------------------
 void keyboardCallback(unsigned char key, int x, int y)
 {
 	switch(key)
@@ -140,17 +161,27 @@ void keyboardCallback(unsigned char key, int x, int y)
 	}
 }
 
+//---------------------------------------------------------- specialKeysCallback
+// Implementation notes:
+//  Called when any special keyboard event occurs. This is one of the functions 
+//  that is used to process user inputs and apply changes to the state of the
+//  game.
+//------------------------------------------------------------------------------
 void specialKeysCallback(int key, int x, int y)
 {
 	switch(key)
 	{
-
 		default:
 			std::cout << "SKP: No action for " << key << std::endl;
 			break;
 	}
 }
 
+//---------------------------------------------------------------- mouseCallback
+// Implementation notes:
+//  Called when any mouse event occurs. This is one of the functions that is 
+//  used to process user inputs and apply changes to the state of the game.
+//------------------------------------------------------------------------------
 void mouseCallback(int button, int state, int x, int y)
 {
 	switch(button)
