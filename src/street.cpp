@@ -1,5 +1,7 @@
 #include "street.h"
 
+#include <iostream>
+
 //------------------------------------------------------------------ constructor
 // Implementation notes:
 //  #TODO
@@ -18,4 +20,13 @@ Street::Street(
 void Street::draw()
 {
 
+}
+
+//------------------------------------------------------------------------ Print
+// Implementation notes:
+//  #TODO
+//------------------------------------------------------------------------------
+void Street::print()
+{
+	std::cout << "S";
 }

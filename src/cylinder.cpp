@@ -1,5 +1,7 @@
 #include "cylinder.h"
 
+#include <iostream>
+
 //------------------------------------------------------------------ constructor
 // Implementation notes:
 //  #TODO
@@ -18,4 +20,13 @@ Cylinder::Cylinder(
 void Cylinder::draw()
 {
 
+}
+
+//------------------------------------------------------------------------ Print
+// Implementation notes:
+//  #TODO
+//------------------------------------------------------------------------------
+void Cylinder::print()
+{
+	std::cout << "C";
 }

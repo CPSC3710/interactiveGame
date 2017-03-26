@@ -31,6 +31,18 @@ public:
 	//--------------------------------------------------------------------------
 	void draw();
 
+	//-------------------------------------------------------------------- print
+	// Brief Description
+	//  Prints "B" (Representing "Bot" of "Robot") to the console, which
+	//  can be used for debugging purposes.
+	//
+	// Method:    print
+	// FullName:  Robot::print
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
+	void print();
+
 private:
 
 };

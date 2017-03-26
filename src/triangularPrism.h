@@ -31,6 +31,18 @@ public:
 	//--------------------------------------------------------------------------
 	void draw();
 
+	//-------------------------------------------------------------------- print
+	// Brief Description
+	//  Prints "T" (Representing "TriangularPrism") to the console, which 
+	//  can be used for debugging purposes.
+	//
+	// Method:    print
+	// FullName:  TriangularPrism::print
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
+	void print();
+
 private:
 
 };

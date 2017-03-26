@@ -31,6 +31,18 @@ public:
 	//--------------------------------------------------------------------------
 	void draw();
 
+	//-------------------------------------------------------------------- print
+	// Brief Description
+	//  Prints "R" (Representing "RectangularPrism") to the console, which
+	//  can be used for debugging purposes.
+	//
+	// Method:    print
+	// FullName:  RectangularPrism::print
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
+	void print();
+
 private:
 
 };

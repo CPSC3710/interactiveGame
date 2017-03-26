@@ -1,5 +1,7 @@
 #include "rectangularPrism.h"
 
+#include <iostream>
+
 //------------------------------------------------------------------ constructor
 // Implementation notes:
 //  #TODO
@@ -18,4 +20,13 @@ RectangularPrism::RectangularPrism(
 void RectangularPrism::draw()
 {
 
+}
+
+//------------------------------------------------------------------------ Print
+// Implementation notes:
+//  #TODO
+//------------------------------------------------------------------------------
+void RectangularPrism::print()
+{
+	std::cout << "R";
 }

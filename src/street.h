@@ -31,6 +31,18 @@ public:
 	//--------------------------------------------------------------------------
 	void draw();
 
+	//-------------------------------------------------------------------- print
+	// Brief Description
+	//  Prints "S" (Representing "Street") to the console, which can be used
+	//  for debugging purposes.
+	//
+	// Method:    print
+	// FullName:  Street::print
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
+	void print();
+
 private:
 
 };

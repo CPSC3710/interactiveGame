@@ -31,6 +31,18 @@ public:
 	//--------------------------------------------------------------------------
 	virtual void draw() = 0;
 
+	//-------------------------------------------------------------------- print
+	// Brief Description
+	//  Prints a letter representing the subclass to the console, intended to
+	//  be used only for debugging purposes.
+	//
+	// Method:    print
+	// FullName:  Object::print
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
+	virtual void print() = 0;
+
 protected:
 	Coordinate3D m_coordinate3D;
 

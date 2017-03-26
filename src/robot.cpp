@@ -1,5 +1,7 @@
 #include "robot.h"
 
+#include <iostream>
+
 //------------------------------------------------------------------ constructor
 // Implementation notes:
 //  #TODO
@@ -18,4 +20,13 @@ Robot::Robot(
 void Robot::draw()
 {
 
+}
+
+//------------------------------------------------------------------------ Print
+// Implementation notes:
+//  #TODO
+//------------------------------------------------------------------------------
+void Robot::print()
+{
+	std::cout << "B";
 }

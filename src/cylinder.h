@@ -31,6 +31,18 @@ public:
 	//--------------------------------------------------------------------------
 	void draw();
 
+	//-------------------------------------------------------------------- print
+	// Brief Description
+	//  Prints "C" (Representing "Cylinder") to the console, which can be used
+	//  for debugging purposes.
+	//
+	// Method:    print
+	// FullName:  Cylinder::print
+	// Access:    public 
+	// Returns:   void
+	//--------------------------------------------------------------------------
+	void print();
+
 private:
 
 };
