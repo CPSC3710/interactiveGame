@@ -43,6 +43,17 @@ public:
 	//--------------------------------------------------------------------------
 	void print();
 
+	//--------------------------------------------------------- viewCoordinate3D
+	// Brief Description
+	//  Returns a const reference to the Coordinate3D of the Cylinder
+	//
+	// Method:    viewCoordinate3D
+	// FullName:  Cylinder::viewCoordinate3D
+	// Access:    public 
+	// Returns:   const Coordinate3D&
+	//--------------------------------------------------------------------------
+	const Coordinate3D& viewCoordinate3D() const;
+
 private:
 
 };

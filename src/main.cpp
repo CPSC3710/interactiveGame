@@ -11,6 +11,8 @@
 #include <iostream>
 #include <cstring>
 #include <cassert>
+#include <algorithm>
+#include <vector>
 
 // Switch these includes for Linux and Windows
 //#include <GL\glut.h> //Windows version
@@ -28,40 +30,76 @@
 #include "triangularPrism.h"
 
 // Global Variables
-int WINDOW_ID;
-int WINDOW_WIDTH = 1024;
-int WINDOW_HEIGHT = 600;
-
 const uint64_t NUM_BLOCKS = 20;
 const uint64_t BLOCK_SIZE = 3;
 const uint64_t BUILDINGS_PER_BLOCK = 5;
+const uint64_t VISUAL_RANGE = 10;
 const uint64_t GRID_DIMENSIONS = (NUM_BLOCKS * (BLOCK_SIZE + 1)) + 1;
+
+int32_t WINDOW_ID;
+int32_t WINDOW_WIDTH = 1024;
+int32_t WINDOW_HEIGHT = 600;
 
 Object* objectGrid[GRID_DIMENSIONS][GRID_DIMENSIONS];
 
-Robot robot(Coordinate3D(0, 0, 0));
+Robot theRobot(Coordinate3D(0, 0, 0));
+std::vector<Object*> objectsInRange;
 
 GLdouble eX, eY, eZ, atX, atY, atZ;
 
-void init(int width, int height);
+// Function Prototypes
+void init(
+	int32_t width,
+	int32_t height);
+
 void renderSceneCallback();
-void resizeSceneCallback(int width, int height);
-void keyboardCallback(unsigned char key, int x, int y);
-void specialKeysCallback(int key, int x, int y);
-void mouseCallback(int button, int state, int x, int y);
+
+void resizeSceneCallback(
+	int32_t width,
+	int32_t height);
+
+void keyboardCallback(
+	unsigned char key,
+	int32_t x,
+	int32_t y);
+
+void specialKeysCallback(
+	int32_t key,
+	int32_t x,
+	int32_t y);
+
+void mouseCallback(
+	int32_t button,
+	int32_t state,
+	int32_t x,
+	int32_t y);
+
 void populateGrid();
+
 void setStreetsAndEmptyLocations();
+
 void populateBlocks();
+
 void printGridToConsole();
 
-int main(int argc, char** argv)
+void populateInRangeVector();
+
+void printObjectsInRangeToConsole();
+
+// Entry point
+int main(int32_t argc, char** argv)
 {
-	glutInit(&argc, argv);
+	glutInit(
+		&argc,
+		argv);
 
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
 	// Window creation
-	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	glutInitWindowSize(
+		WINDOW_WIDTH,
+		WINDOW_HEIGHT);
+
 	WINDOW_ID = glutCreateWindow(PROGRAM_TITLE);
 
 	// Register and install draw function
@@ -91,17 +129,35 @@ int main(int argc, char** argv)
 //  for the game to begin looping
 //------------------------------------------------------------------------------
 void init(
-	int width,
-	int height)
+	int32_t width,
+	int32_t height)
 {
+	// Seed rand with time
 	srand(time(nullptr));
+
+	// Populate the grid representing the world with random objects
 	populateGrid();
 
+	// Set the capacity of the objectsInRange container to the maximum
+	// amount it can ever have
+	objectsInRange.reserve(VISUAL_RANGE * VISUAL_RANGE);
+
+	// Populate the objectsInRange vector so that the first draw is correct
+	// This will be repopulated every time the robot moves
+	populateInRangeVector();
+
 	// Eye at Origin and looking -z axis
-	eX = 0; eY = 0; eZ = 0; atX = 0; atY = 0; atZ = -1;
+	eX = 0; 
+	eY = 0;
+	eZ = 0;
+
+	atX = 0;
+	atY = 0;
+	atZ = -1;
 
 	// Color to clear color buffer to.
-	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+	glClearColor(
+		0.1f, 0.1f, 0.1f, 0.0f);
 
 	// Depth to clear depth buffer to; type of test.
 	glClearDepth(1.0);
@@ -117,7 +173,9 @@ void init(
 	glShadeModel(GL_SMOOTH);
 
 	// Load up the correct perspective matrix; using a callback directly.
-	resizeSceneCallback(width, height);
+	resizeSceneCallback(
+		width,
+		height);
 }
 
 //---------------------------------------------------------- renderSceneCallback
@@ -132,14 +190,27 @@ void renderSceneCallback()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 1.0, 0.0);
+	// Draw all objects in range
+	for(Object* inRangeObject : objectsInRange)
+	{
+		inRangeObject->draw();
+	}
 
-	// Test Shape
-	glTranslatef(0.0f, 0.0f, -10.0f);
-	glutSolidSphere(1, 20, 20);
+	// Draw the robot
+	theRobot.draw();
 
-	// Test
-	robot.draw();
+	// Test begin
+	gluLookAt(
+		eX, eY, eZ,
+		atX, atY, atZ,
+		0.0, 1.0, 0.0);
+
+	glTranslatef(
+		0.0f, 0.0f, -10.0f);
+
+	glutSolidSphere(
+		1, 20, 20);
+	// Test end
 
 	glutSwapBuffers();
 }
@@ -151,8 +222,8 @@ void renderSceneCallback()
 //  crash doesn't happen.
 //------------------------------------------------------------------------------
 void resizeSceneCallback(
-	int width,
-	int height)
+	int32_t width,
+	int32_t height)
 {
 	if(height == 0)
 	{
@@ -183,8 +254,8 @@ void resizeSceneCallback(
 //------------------------------------------------------------------------------
 void keyboardCallback(
 	unsigned char key,
-	int x,
-	int y)
+	int32_t x,
+	int32_t y)
 {
 	switch(key)
 	{
@@ -201,9 +272,9 @@ void keyboardCallback(
 //  game.
 //------------------------------------------------------------------------------
 void specialKeysCallback(
-	int key,
-	int x,
-	int y)
+	int32_t key,
+	int32_t x,
+	int32_t y)
 {
 	switch(key)
 	{
@@ -219,10 +290,10 @@ void specialKeysCallback(
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
 void mouseCallback(
-	int button,
-	int state,
-	int x,
-	int y)
+	int32_t button,
+	int32_t state,
+	int32_t x,
+	int32_t y)
 {
 	switch(button)
 	{
@@ -245,11 +316,12 @@ void mouseCallback(
 				{
 					break;
 				}
+				break;
 			}
-			break;
 		}
 		default:
 		{
+			std::cout << "MBP: No action for " << button << "button in " << state << " state" << std::endl;
 			break;
 		}
 	}
@@ -268,7 +340,8 @@ void populateGrid()
 {
 	setStreetsAndEmptyLocations();
 	populateBlocks();
-	// #TODO_AH remove this at some point
+
+	// #TODO_AH test function, remove at some point
 	printGridToConsole();
 }
 
@@ -359,7 +432,9 @@ void populateBlocks()
 						{
 							case 0:
 							{
-								objectGrid[xCoordinate][yCoordinate] = new Cylinder(Coordinate3D(xCoordinate, yCoordinate, 0));
+								objectGrid[xCoordinate][yCoordinate] =
+									new Cylinder(Coordinate3D(xCoordinate, yCoordinate, 0));
+
 								numObjectsPlaced++;
 								break;
 							}
@@ -410,6 +485,119 @@ void printGridToConsole()
 				std::cout << "-";
 			}
 		}
+		std::cout << std::endl;
+	}
+}
+
+//----------------------------------------------------------- printGridToConsole
+// Implementation notes:
+//  Prints a character representing each Object subtype to the console. a "-"
+//  represents an empty position. This function existing purely for testing
+//  the implementation of the populateGrid function.
+//------------------------------------------------------------------------------
+void populateInRangeVector()
+{
+	// Clear the pointers currently in the vector
+	objectsInRange.clear();
+
+	// Calculate the boundaries of the for loops, which represent the
+	// visual range of the robot, and determines what objects will be drawn
+	int64_t xMin = std::max(
+		static_cast<int64_t>(0),
+		static_cast<int64_t>(theRobot.viewCoordinate3D().viewX() - VISUAL_RANGE));
+
+	int64_t yMin = std::max(
+		static_cast<int64_t>(0),
+		static_cast<int64_t>(theRobot.viewCoordinate3D().viewY() - VISUAL_RANGE));
+
+	int64_t xMax = std::min(
+		static_cast<int64_t>(GRID_DIMENSIONS),
+		static_cast<int64_t>(theRobot.viewCoordinate3D().viewX() + VISUAL_RANGE));
+
+	int64_t yMax = std::min(
+		static_cast<int64_t>(GRID_DIMENSIONS),
+		static_cast<int64_t>(theRobot.viewCoordinate3D().viewY() + VISUAL_RANGE));
+
+	// Add all the objects within the boundary
+	for(int64_t i = xMin; i < xMax; i++)
+	{
+		for(int64_t j = yMin; j < yMax; j++)
+		{
+			// Do not add nullptrs to our objectsInRange container
+			if(objectGrid[i][j] != nullptr)
+			{
+				// Push the object at the grid position 
+				// to the objectsInRange vector
+				objectsInRange.push_back(objectGrid[i][j]);
+			}
+			else
+			{
+				// Do nothing
+			}
+		}
+	}
+
+	// #TODO_AH test function, remove at some point
+	printObjectsInRangeToConsole();
+}
+
+//------------------------------------------------- printObjectsInRangeToConsole
+// Implementation notes:
+//  Prints only the character representing the objects that are in range, but
+//  still prints the whole grid, every tile within the grid that is not in 
+//  in range will be a "-".
+//------------------------------------------------------------------------------
+void printObjectsInRangeToConsole()
+{
+	// Loop through every grid position
+	for(uint64_t i = 0; i < GRID_DIMENSIONS; i++)
+	{
+		for(uint64_t j = 0; j < GRID_DIMENSIONS; j++)
+		{
+			// If the grid position is not empty
+			if(objectGrid[i][j] != nullptr)
+			{
+				bool found = false;
+
+				// Loop through every object in range
+				for(size_t k = 0; k < objectsInRange.size(); k++)
+				{
+					// If the current object in range has the x,y coordinate
+					// matching this grid position
+					if((static_cast<uint64_t>(objectsInRange[k]->viewCoordinate3D().viewX()) == i) 
+						&& (static_cast<uint64_t>(objectsInRange[k]->viewCoordinate3D().viewY()) == j))
+					{
+						// Print the character corresponding to the object
+						objectsInRange[k]->print();
+						// Set found to true so we don't print a "-" later
+						found = true;
+						break;
+					}
+					else
+					{
+						continue;
+					}
+				}
+
+				// This happens when the grid position being processed is not
+				// in range, so we must print a "-"
+				if(!found)
+				{
+					std::cout << "-";
+				}
+				else
+				{
+					// Do nothing
+				}
+			}
+			else
+			{
+				// This happens when the grid position being processed is
+				// empty, so we must print a "-"
+				std::cout << "-";
+			}
+		}
+
 		std::cout << std::endl;
 	}
 }

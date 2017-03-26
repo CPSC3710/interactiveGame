@@ -30,3 +30,12 @@ void Cylinder::print()
 {
 	std::cout << "C";
 }
+
+//------------------------------------------------------------- viewCoordinate3D
+// Implementation notes:
+//  Self explanatory
+//------------------------------------------------------------------------------
+const Coordinate3D& Cylinder::viewCoordinate3D() const
+{
+	return this->m_coordinate3D;
+}

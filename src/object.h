@@ -43,6 +43,17 @@ public:
 	//--------------------------------------------------------------------------
 	virtual void print() = 0;
 
+	//--------------------------------------------------------- viewCoordinate3D
+	// Brief Description
+	//  Returns a const reference to the Coordinate3D of the Object
+	//
+	// Method:    viewCoordinate3D
+	// FullName:  Robot::viewCoordinate3D
+	// Access:    public 
+	// Returns:   const Coordinate3D&
+	//--------------------------------------------------------------------------
+	virtual const Coordinate3D& viewCoordinate3D() const = 0;
+
 protected:
 	Coordinate3D m_coordinate3D;
 

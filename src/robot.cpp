@@ -30,3 +30,12 @@ void Robot::print()
 {
 	std::cout << "B";
 }
+
+//------------------------------------------------------------- viewCoordinate3D
+// Implementation notes:
+//  Self explanatory
+//------------------------------------------------------------------------------
+const Coordinate3D& Robot::viewCoordinate3D() const
+{
+	return this->m_coordinate3D;
+}

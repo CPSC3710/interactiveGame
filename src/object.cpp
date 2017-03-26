@@ -1,7 +1,7 @@
 #include "object.h"
 
 Object::Object(
-	const Coordinate3D & coordinate) : 
+	const Coordinate3D& coordinate) :
 	m_coordinate3D(coordinate)
 {
 

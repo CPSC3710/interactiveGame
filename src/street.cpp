@@ -30,3 +30,13 @@ void Street::print()
 {
 	std::cout << "S";
 }
+
+//------------------------------------------------------------- viewCoordinate3D
+// Implementation notes:
+//  Self explanatory
+//------------------------------------------------------------------------------
+const Coordinate3D& Street::viewCoordinate3D() const
+{
+	return this->m_coordinate3D;
+}
+
