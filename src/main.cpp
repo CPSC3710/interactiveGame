@@ -259,6 +259,46 @@ void keyboardCallback(
 {
 	switch(key)
 	{
+		case GLUT_KEY_F1:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F2:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F3:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F4:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F5:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F6:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F7:
+		{
+
+			break;
+		}
+		case GLUT_KEY_F8:
+		{
+
+			break;
+		}
 		default:
 			std::cout << "KP: No action for " << key << std::endl;
 			break;
@@ -278,6 +318,31 @@ void specialKeysCallback(
 {
 	switch(key)
 	{
+		case 'a':
+		{
+
+			break;
+		}
+		case 'p':
+		{
+
+			break;
+		}
+		case 'q':
+		{
+
+			break;
+		}
+		case 'r':
+		{
+
+			break;
+		}
+		case 'z':
+		{
+
+			break;
+		}
 		default:
 			std::cout << "SKP: No action for " << key << std::endl;
 			break;
@@ -301,23 +366,22 @@ void mouseCallback(
 		{
 			switch(state)
 			{
+				case GLUT_DOWN:
+				{
+
+					break;
+				}
+				case GLUT_UP:
+				{
+
+					break;
+				}
 				default:
 				{
 					break;
 				}
 			}
 			break;
-		}
-		case GLUT_RIGHT_BUTTON:
-		{
-			switch(state)
-			{
-				default:
-				{
-					break;
-				}
-				break;
-			}
 		}
 		default:
 		{
