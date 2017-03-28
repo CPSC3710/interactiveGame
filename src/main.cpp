@@ -1,40 +1,36 @@
 /*
-	* Interactive Game
-	* CPSC 3710 Final Project
-	* Group members: Alex Hochheiden, Cody Barnson, Cody Crawford
+		* Interactive Game
+		* CPSC 3710 Final Project
+		* Group members: Alex Hochheiden, Cody Barnson, Cody Crawford
 */
 
 #define PROGRAM_TITLE "Interactive Game"
 
 #include <stdlib.h>  // Useful for the following includes.
 #include <time.h>
-#include <iostream>
-#include <cstring>
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+#include <cstring>
+#include <iostream>
 #include <vector>
 
 // Switch these includes for Linux and Windows
 //#include <GL\glut.h> //Windows version
-#include <GL/gl.h>   // OpenGL itself. Linux
-#include <GL/glu.h>  // GLU support library. Linux
-#include <GL/glut.h> // GLUT support library. Linux
+#include <GL/gl.h>    // OpenGL itself. Linux
+#include <GL/glu.h>   // GLU support library. Linux
+#include <GL/glut.h>  // GLUT support library. Linux
 
 // Project includes
-#include "robot.h"
 #include "coordinate3d.h"
-#include "object.h"
-#include "street.h"
 #include "cylinder.h"
+#include "object.h"
 #include "rectangularPrism.h"
+#include "robot.h"
+#include "street.h"
 #include "triangularPrism.h"
 
-// Global Variables
-const uint64_t NUM_BLOCKS = 20;
-const uint64_t BLOCK_SIZE = 3;
-const uint64_t BUILDINGS_PER_BLOCK = 5;
-const uint64_t VISUAL_RANGE = 10;
-const uint64_t GRID_DIMENSIONS = (NUM_BLOCKS * (BLOCK_SIZE + 1)) + 1;
+// global variables -- config file
+#include "config.h"
 
 int32_t WINDOW_ID;
 int32_t WINDOW_WIDTH = 1024;
@@ -45,34 +41,21 @@ Object* objectGrid[GRID_DIMENSIONS][GRID_DIMENSIONS];
 Robot theRobot(Coordinate3D(0, 0, 0));
 std::vector<Object*> objectsInRange;
 
+double offX, offY, offZ;
 GLdouble eX, eY, eZ, atX, atY, atZ;
 
 // Function Prototypes
-void init(
-	int32_t width,
-	int32_t height);
+void init(int32_t width, int32_t height);
 
 void renderSceneCallback();
 
-void resizeSceneCallback(
-	int32_t width,
-	int32_t height);
+void resizeSceneCallback(int32_t width, int32_t height);
 
-void keyboardCallback(
-	unsigned char key,
-	int32_t x,
-	int32_t y);
+void keyboardCallback(unsigned char key, int32_t x, int32_t y);
 
-void specialKeysCallback(
-	int32_t key,
-	int32_t x,
-	int32_t y);
+void specialKeysCallback(int32_t key, int32_t x, int32_t y);
 
-void mouseCallback(
-	int32_t button,
-	int32_t state,
-	int32_t x,
-	int32_t y);
+void mouseCallback(int32_t button, int32_t state, int32_t x, int32_t y);
 
 void populateGrid();
 
@@ -86,19 +69,17 @@ void populateInRangeVector();
 
 void printObjectsInRangeToConsole();
 
+void setViewLookAt();
+
 // Entry point
 int main(int32_t argc, char** argv)
 {
-	glutInit(
-		&argc,
-		argv);
+	glutInit(&argc, argv);
 
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
 	// Window creation
-	glutInitWindowSize(
-		WINDOW_WIDTH,
-		WINDOW_HEIGHT);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	WINDOW_ID = glutCreateWindow(PROGRAM_TITLE);
 
@@ -128,9 +109,7 @@ int main(int32_t argc, char** argv)
 //  Initializes various OpenGL settings and any other variables necessary
 //  for the game to begin looping
 //------------------------------------------------------------------------------
-void init(
-	int32_t width,
-	int32_t height)
+void init(int32_t width, int32_t height)
 {
 	// Seed rand with time
 	srand(time(nullptr));
@@ -146,18 +125,36 @@ void init(
 	// This will be repopulated every time the robot moves
 	populateInRangeVector();
 
+	// set our offsets for the camera eye position
+	offX = 0.0;
+	offY = 5.0;
+	offZ = 5.0;
+
+	// set coordinates of eye position and what we are looking at (i.e. the robot)
+	setViewLookAt();
+
 	// Eye at Origin and looking -z axis
-	eX = 0; 
-	eY = 0;
-	eZ = 0;
+	/*eX = 5;
+  eY = 5;
+  eZ = 5;*/
 
-	atX = 0;
-	atY = 0;
-	atZ = -1;
+  /* atX = 0;
+ atY = 0;
+ atZ = 0;*/
 
-	// Color to clear color buffer to.
-	glClearColor(
-		0.1f, 0.1f, 0.1f, 0.0f);
+ // set coordinates of what we are looking at
+ /*atX = theRobot.viewCoordinate3D().viewX();
+atY = theRobot.viewCoordinate3D().viewY();
+atZ = theRobot.viewCoordinate3D().viewZ();
+
+// set coordinates of the eye position, using the robot coordinate3D and the
+// offsets for each component x y z
+eX = theRobot.viewCoordinate3D().viewX() + offX;
+eY = theRobot.viewCoordinate3D().viewY() + offY;
+eZ = theRobot.viewCoordinate3D().viewZ() + offZ;*/
+
+    // Color to clear color buffer to.
+	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
 	// Depth to clear depth buffer to; type of test.
 	glClearDepth(1.0);
@@ -173,9 +170,7 @@ void init(
 	glShadeModel(GL_SMOOTH);
 
 	// Load up the correct perspective matrix; using a callback directly.
-	resizeSceneCallback(
-		width,
-		height);
+	resizeSceneCallback(width, height);
 }
 
 //---------------------------------------------------------- renderSceneCallback
@@ -196,20 +191,26 @@ void renderSceneCallback()
 		inRangeObject->draw();
 	}
 
+	// Test begin
+	gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 1.0, 0.0);
+	// glTranslatef(0.0f, 0.0f, -10.0f);
+
 	// Draw the robot
 	theRobot.draw();
+	// glutSolidSphere(1, 20, 20);
 
-	// Test begin
-	gluLookAt(
-		eX, eY, eZ,
-		atX, atY, atZ,
-		0.0, 1.0, 0.0);
+	// length of each axis to draw
+	double len = 2.0;
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_LINES);
+	glVertex3d(0, 0, 0);
+	glVertex3d(len, 0, 0);
+	glVertex3d(0, 0, 0);
+	glVertex3d(0, len, 0);
+	glVertex3d(0, 0, 0);
+	glVertex3d(0, 0, len);
+	glEnd();
 
-	glTranslatef(
-		0.0f, 0.0f, -10.0f);
-
-	glutSolidSphere(
-		1, 20, 20);
 	// Test end
 
 	glutSwapBuffers();
@@ -221,9 +222,7 @@ void renderSceneCallback()
 //  that the window is at least 1 pixel tall at the minimum to ensure a
 //  crash doesn't happen.
 //------------------------------------------------------------------------------
-void resizeSceneCallback(
-	int32_t width,
-	int32_t height)
+void resizeSceneCallback(int32_t width, int32_t height)
 {
 	if(height == 0)
 	{
@@ -239,6 +238,7 @@ void resizeSceneCallback(
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+
 	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -249,7 +249,7 @@ void resizeSceneCallback(
 
 //------------------------------------------------------------- keyboardCallback
 // Implementation notes:
-//  Called when any normal keyboard event occurs. One of the functions that is 
+//  Called when any normal keyboard event occurs. One of the functions that is
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
 void keyboardCallback(
@@ -259,55 +259,47 @@ void keyboardCallback(
 {
 	switch(key)
 	{
-		case GLUT_KEY_F1:
-		{
+		// NOTE: assignment specifies the following key functions:
+		// 'a': at intersection, turn right; else do nothing
+		// 'q': at intersection, turn left; else do nothing
+		// 'z': push the robot forward, if possible (bound check), and update the
+		// camera
+		// since this is confusing as fuck, for now I'm using WASD layout, where 'w'
+		// moves forward, 'a' turns left, and 'd' turns right
+		// can change back later
 
+		case 'd':
+		{ 
+			// at an intersection of the streets, turn the robot to the
+			// right; if not at intersection, do nothing
+			theRobot.attemptRightTurn();
 			break;
 		}
-		case GLUT_KEY_F2:
-		{
-
+		case 'a':
+		{ 
+			// at an intersection of the streets, turn the robot to left;
+			// if not at intersection, do nothing
+			theRobot.attemptLeftTurn();
 			break;
 		}
-		case GLUT_KEY_F3:
-		{
-
-			break;
-		}
-		case GLUT_KEY_F4:
-		{
-
-			break;
-		}
-		case GLUT_KEY_F5:
-		{
-
-			break;
-		}
-		case GLUT_KEY_F6:
-		{
-
-			break;
-		}
-		case GLUT_KEY_F7:
-		{
-
-			break;
-		}
-		case GLUT_KEY_F8:
-		{
-
+		case 'w':
+		{  
+			// push the robot forward
+			theRobot.attemptMoveForward();
+			setViewLookAt();
 			break;
 		}
 		default:
+		{
 			std::cout << "KP: No action for " << key << std::endl;
 			break;
+		}
 	}
 }
 
 //---------------------------------------------------------- specialKeysCallback
 // Implementation notes:
-//  Called when any special keyboard event occurs. This is one of the functions 
+//  Called when any special keyboard event occurs. This is one of the functions
 //  that is used to process user inputs and apply changes to the state of the
 //  game.
 //------------------------------------------------------------------------------
@@ -318,47 +310,52 @@ void specialKeysCallback(
 {
 	switch(key)
 	{
-		case 'a':
+		case GLUT_KEY_F1:
 		{
-
 			break;
 		}
-		case 'p':
+		case GLUT_KEY_F2:
 		{
-
 			break;
 		}
-		case 'q':
+		case GLUT_KEY_F3:
 		{
-
 			break;
 		}
-		case 'r':
+		case GLUT_KEY_F4:
 		{
-
 			break;
 		}
-		case 'z':
+		case GLUT_KEY_F5:
 		{
-
+			break;
+		}
+		case GLUT_KEY_F6:
+		{
+			break;
+		}
+		case GLUT_KEY_F7:
+		{
+			break;
+		}
+		case GLUT_KEY_F8:
+		{
 			break;
 		}
 		default:
+		{
 			std::cout << "SKP: No action for " << key << std::endl;
 			break;
+		}
 	}
 }
 
 //---------------------------------------------------------------- mouseCallback
 // Implementation notes:
-//  Called when any mouse event occurs. This is one of the functions that is 
+//  Called when any mouse event occurs. This is one of the functions that is
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
-void mouseCallback(
-	int32_t button,
-	int32_t state,
-	int32_t x,
-	int32_t y)
+void mouseCallback(int32_t button, int32_t state, int32_t x, int32_t y)
 {
 	switch(button)
 	{
@@ -368,12 +365,10 @@ void mouseCallback(
 			{
 				case GLUT_DOWN:
 				{
-
 					break;
 				}
 				case GLUT_UP:
 				{
-
 					break;
 				}
 				default:
@@ -385,7 +380,8 @@ void mouseCallback(
 		}
 		default:
 		{
-			std::cout << "MBP: No action for " << button << "button in " << state << " state" << std::endl;
+			std::cout << "MBP: No action for " << button << "button in " << state
+				<< " state" << std::endl;
 			break;
 		}
 	}
@@ -434,7 +430,7 @@ void setStreetsAndEmptyLocations()
 
 //--------------------------------------------------------------- populateBlocks
 // Implementation notes:
-//  Randomly populates all the blocks with a random assortment of objects. 
+//  Randomly populates all the blocks with a random assortment of objects.
 //  The behavior of this function is somewhat dynamic, since it is controlled
 //  by the global variables of NUM_BLOCKS, BLOCK_SIZE, and BUILDINGS_PER_BLOCK.
 //  The function will always populate each block with the exact amount of
@@ -480,7 +476,8 @@ void populateBlocks()
 						// This is to ensure that we place the minimum number
 						// of building required without reaching the end of the
 						// block and having to double back
-						if((BUILDINGS_PER_BLOCK - numObjectsPlaced) >= positionsRemainingWithinBlock)
+						if((BUILDINGS_PER_BLOCK - numObjectsPlaced) >=
+							positionsRemainingWithinBlock)
 						{
 							selection = rand() % 3;
 						}
@@ -504,13 +501,15 @@ void populateBlocks()
 							}
 							case 1:
 							{
-								objectGrid[xCoordinate][yCoordinate] = new RectangularPrism(Coordinate3D(xCoordinate, yCoordinate, 0));
+								objectGrid[xCoordinate][yCoordinate] = new RectangularPrism(
+									Coordinate3D(xCoordinate, yCoordinate, 0));
 								numObjectsPlaced++;
 								break;
 							}
 							case 2:
 							{
-								objectGrid[xCoordinate][yCoordinate] = new TriangularPrism(Coordinate3D(xCoordinate, yCoordinate, 0));
+								objectGrid[xCoordinate][yCoordinate] = new TriangularPrism(
+									Coordinate3D(xCoordinate, yCoordinate, 0));
 								numObjectsPlaced++;
 								break;
 							}
@@ -553,7 +552,7 @@ void printGridToConsole()
 	}
 }
 
-//----------------------------------------------------------- printGridToConsole
+//-------------------------------------------------------- populateInRangeVector
 // Implementation notes:
 //  Prints a character representing each Object subtype to the console. a "-"
 //  represents an empty position. This function existing purely for testing
@@ -590,7 +589,7 @@ void populateInRangeVector()
 			// Do not add nullptrs to our objectsInRange container
 			if(objectGrid[i][j] != nullptr)
 			{
-				// Push the object at the grid position 
+				// Push the object at the grid position
 				// to the objectsInRange vector
 				objectsInRange.push_back(objectGrid[i][j]);
 			}
@@ -608,7 +607,7 @@ void populateInRangeVector()
 //------------------------------------------------- printObjectsInRangeToConsole
 // Implementation notes:
 //  Prints only the character representing the objects that are in range, but
-//  still prints the whole grid, every tile within the grid that is not in 
+//  still prints the whole grid, every tile within the grid that is not in
 //  in range will be a "-".
 //------------------------------------------------------------------------------
 void printObjectsInRangeToConsole()
@@ -628,8 +627,10 @@ void printObjectsInRangeToConsole()
 				{
 					// If the current object in range has the x,y coordinate
 					// matching this grid position
-					if((static_cast<uint64_t>(objectsInRange[k]->viewCoordinate3D().viewX()) == i) 
-						&& (static_cast<uint64_t>(objectsInRange[k]->viewCoordinate3D().viewY()) == j))
+					if((static_cast<uint64_t>(
+						objectsInRange[k]->viewCoordinate3D().viewX()) == i) &&
+						(static_cast<uint64_t>(
+						objectsInRange[k]->viewCoordinate3D().viewY()) == j))
 					{
 						// Print the character corresponding to the object
 						objectsInRange[k]->print();
@@ -664,4 +665,24 @@ void printObjectsInRangeToConsole()
 
 		std::cout << std::endl;
 	}
+}
+
+//---------------------------------------------------------------- setViewLookAt
+// Implementation notes:
+//  Updates the parameters for the glLookAt function with the correct eye
+//  position (calculated via offsets based on the robot's position) and what
+//  we're looking at (the robot's current position)
+//------------------------------------------------------------------------------
+void setViewLookAt()
+{
+	// set coordinates of what we are looking at
+	atX = theRobot.viewCoordinate3D().viewX();
+	atY = theRobot.viewCoordinate3D().viewY();
+	atZ = theRobot.viewCoordinate3D().viewZ();
+
+	// set coordinates of the eye position, using the robot coordinate3D and the
+	// offsets for each component x y z
+	eX = theRobot.viewCoordinate3D().viewX() + offX;
+	eY = theRobot.viewCoordinate3D().viewY() + offY;
+	eZ = theRobot.viewCoordinate3D().viewZ() + offZ;
 }

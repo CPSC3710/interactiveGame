@@ -6,23 +6,35 @@
 class Coordinate3D
 {
 public:
-
 	//-------------------------------------------------------------- constructor
 	// Brief Description
 	//  Constructor for a 3D Coordinate
 	//
 	// Method:    Coordinate3D
 	// FullName:  Coordinate3D::Coordinate3D
-	// Access:    public 
+	// Access:    public
 	// Returns:   None
 	// Parameter: const int64_t& x
 	// Parameter: const int64_t& x
 	// Parameter: const int64_t& z
 	//--------------------------------------------------------------------------
 	Coordinate3D(
-		const int64_t& x,
-		const int64_t& y,
+		const int64_t& x, 
+		const int64_t& y, 
 		const int64_t& z);
+
+	//--------------------------------------------------------------------- setX
+	// Brief Description
+	//  Setter for the X coordinate integer value
+	//
+	// Method:    setX
+	// FullName:  Coordinate3D::setX
+	// Access:    public
+	// Returns:   void
+	// Parameter: const int64_t& x
+	//--------------------------------------------------------------------------
+	void setX(
+		const int64_t& x);
 
 	//-------------------------------------------------------------------- viewX
 	// Brief Description
@@ -30,10 +42,23 @@ public:
 	//
 	// Method:    viewX
 	// FullName:  Coordinate3D::viewX
-	// Access:    public 
+	// Access:    public
 	// Returns:   const int64_t&
 	//--------------------------------------------------------------------------
 	const int64_t& viewX() const;
+
+	//--------------------------------------------------------------------- setY
+	// Brief Description
+	//  Setter for the Y coordinate integer value
+	//
+	// Method:    setY
+	// FullName:  Coordinate3D::setY
+	// Access:    public
+	// Returns:   void
+	// Parameter: const int64_t& y
+	//--------------------------------------------------------------------------
+	void setY(
+		const int64_t& y);
 
 	//-------------------------------------------------------------------- viewY
 	// Brief Description
@@ -41,10 +66,23 @@ public:
 	//
 	// Method:    viewY
 	// FullName:  Coordinate3D::viewY
-	// Access:    public 
+	// Access:    public
 	// Returns:   const int64_t&
 	//--------------------------------------------------------------------------
 	const int64_t& viewY() const;
+
+	//--------------------------------------------------------------------- setZ
+	// Brief Description
+	//  Setter for the Z coordinate integer value
+	//
+	// Method:    setZ
+	// FullName:  Coordinate3D::setZ
+	// Access:    public
+	// Returns:   void
+	// Parameter: const int64_t& z
+	//--------------------------------------------------------------------------
+	void setZ(
+		const int64_t& z);
 
 	//-------------------------------------------------------------------- viewZ
 	// Brief Description
@@ -52,7 +90,7 @@ public:
 	//
 	// Method:    viewZ
 	// FullName:  Coordinate3D::viewZ
-	// Access:    public 
+	// Access:    public
 	// Returns:   const int64_t&
 	//--------------------------------------------------------------------------
 	const int64_t& viewZ() const;

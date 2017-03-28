@@ -14,6 +14,16 @@ Coordinate3D::Coordinate3D(
 	this->m_z = z;
 }
 
+//------------------------------------------------------------------------- setX
+// Implementation notes:
+//  Self explanatory
+//------------------------------------------------------------------------------
+void Coordinate3D::setX(
+	const int64_t& x)
+{
+	this->m_x = x;
+}
+
 //------------------------------------------------------------------------ viewX
 // Implementation notes:
 //  Self explanatory
@@ -23,6 +33,16 @@ const int64_t& Coordinate3D::viewX() const
 	return this->m_x;
 }
 
+//------------------------------------------------------------------------- setY
+// Implementation notes:
+//  Self explanatory
+//------------------------------------------------------------------------------
+void Coordinate3D::setY(
+	const int64_t& y)
+{
+	this->m_y = y;
+}
+
 //------------------------------------------------------------------------ viewY
 // Implementation notes:
 //  Self explanatory
@@ -30,6 +50,16 @@ const int64_t& Coordinate3D::viewX() const
 const int64_t& Coordinate3D::viewY() const
 {
 	return this->m_y;
+}
+
+//------------------------------------------------------------------------- setZ
+// Implementation notes:
+//  Self explanatory
+//------------------------------------------------------------------------------
+void Coordinate3D::setZ(
+	const int64_t& z)
+{
+	this->m_z = z;
 }
 
 //------------------------------------------------------------------------ viewZ
