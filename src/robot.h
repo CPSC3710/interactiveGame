@@ -22,7 +22,7 @@ class Robot : public Object {
   Robot(const Coordinate3D& coordinate);
 
   // Constructor that also sets the maximum grid dimensions for the robot
-  Robot(const Coordinate3D& coordinate, const uint64_t gridMax);
+  /* Robot(const Coordinate3D& coordinate, const uint64_t gridMax);*/
 
   //--------------------------------------------------------------------- draw
   // Brief Description
@@ -96,7 +96,7 @@ class Robot : public Object {
   // on, coordinates x and y that are greater than or equal to the grid max are
   // deemed invalid locations and boundary checks shall be done to prevent such
   // moves
-  uint64_t GRID_DIMENSION;
+  // uint64_t GRID_DIMENSION;
 
   // enables turning
   bool robotAtIntersection = true;

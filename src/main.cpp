@@ -29,12 +29,8 @@
 #include "street.h"
 #include "triangularPrism.h"
 
-// Global Variables
-const uint64_t NUM_BLOCKS = 20;
-const uint64_t BLOCK_SIZE = 3;
-const uint64_t BUILDINGS_PER_BLOCK = 5;
-const uint64_t VISUAL_RANGE = 10;
-const uint64_t GRID_DIMENSIONS = (NUM_BLOCKS * (BLOCK_SIZE + 1)) + 1;
+// global variables -- config file
+#include "config.h"
 
 int32_t WINDOW_ID;
 int32_t WINDOW_WIDTH = 1024;
@@ -42,7 +38,7 @@ int32_t WINDOW_HEIGHT = 600;
 
 Object* objectGrid[GRID_DIMENSIONS][GRID_DIMENSIONS];
 
-Robot theRobot(Coordinate3D(0, 0, 0), GRID_DIMENSIONS);
+Robot theRobot(Coordinate3D(0, 0, 0));
 std::vector<Object*> objectsInRange;
 
 float offX, offY, offZ;
@@ -138,23 +134,23 @@ void init(int32_t width, int32_t height) {
 
   // Eye at Origin and looking -z axis
   /*eX = 5;
-  eY = 5;
-  eZ = 5;*/
+eY = 5;
+eZ = 5;*/
 
   /* atX = 0;
-   atY = 0;
-   atZ = 0;*/
+ atY = 0;
+ atZ = 0;*/
 
   // set coordinates of what we are looking at
   /*atX = theRobot.viewCoordinate3D().viewX();
-  atY = theRobot.viewCoordinate3D().viewY();
-  atZ = theRobot.viewCoordinate3D().viewZ();
+atY = theRobot.viewCoordinate3D().viewY();
+atZ = theRobot.viewCoordinate3D().viewZ();
 
-  // set coordinates of the eye position, using the robot coordinate3D and the
-  // offsets for each component x y z
-  eX = theRobot.viewCoordinate3D().viewX() + offX;
-  eY = theRobot.viewCoordinate3D().viewY() + offY;
-  eZ = theRobot.viewCoordinate3D().viewZ() + offZ;*/
+// set coordinates of the eye position, using the robot coordinate3D and the
+// offsets for each component x y z
+eX = theRobot.viewCoordinate3D().viewX() + offX;
+eY = theRobot.viewCoordinate3D().viewY() + offY;
+eZ = theRobot.viewCoordinate3D().viewZ() + offZ;*/
 
   // Color to clear color buffer to.
   glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
@@ -274,12 +270,12 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
     // can change back later
 
     case 'd': {  // at an intersection of the streets, turn the robot to the
-                 // right; if not at intersection, do nothing
+      // right; if not at intersection, do nothing
       theRobot.turnRobotRight();
       break;
     }
     case 'a': {  // at an intersection of the streets, turn the robot to left;
-                 // if not at intersection, do nothing
+      // if not at intersection, do nothing
       theRobot.turnRobotLeft();
       break;
     }

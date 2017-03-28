@@ -1,4 +1,5 @@
 #include "robot.h"
+#include "config.h"
 
 #include <iostream>
 
@@ -9,11 +10,11 @@
 Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
   this->initializeRobot();
 }
-
+/*
 Robot::Robot(const Coordinate3D& coordinate, uint64_t gridMax)
-    : Object(coordinate), GRID_DIMENSION(gridMax) {
+    : Object(coordinate), GRID_DIMENSIONS(gridMax) {
   this->initializeRobot();
-}
+}*/
 
 //------------------------------------------------------------------------- draw
 // Implementation notes:
@@ -130,8 +131,8 @@ void Robot::initializeRobot() {
 // Return false if the coordinates given are "out of boundary", which implies
 // the move should not be allowed
 bool Robot::robotInBound(int32_t x, int32_t y, int32_t z) {
-  if (x < 0 || x >= GRID_DIMENSION || y < 0 || y >= GRID_DIMENSION || z < 0 ||
-      z >= GRID_DIMENSION) {
+  if (x < 0 || x >= GRID_DIMENSIONS || y < 0 || y >= GRID_DIMENSIONS || z < 0 ||
+      z >= GRID_DIMENSIONS) {
     return false;
   }
   return true;
