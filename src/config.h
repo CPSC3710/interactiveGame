@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <cstdint>
+
 // Global Variables
 const uint64_t NUM_BLOCKS = 20;
 const uint64_t BLOCK_SIZE = 3;
