@@ -42,9 +42,10 @@ int32_t WINDOW_HEIGHT = 600;
 
 Object* objectGrid[GRID_DIMENSIONS][GRID_DIMENSIONS];
 
-Robot theRobot(Coordinate3D(0, 0, 0));
+Robot theRobot(Coordinate3D(0, 0, 0), GRID_DIMENSIONS);
 std::vector<Object*> objectsInRange;
 
+float offX, offY, offZ;
 GLdouble eX, eY, eZ, atX, atY, atZ;
 
 // Function Prototypes
@@ -71,6 +72,9 @@ void printGridToConsole();
 void populateInRangeVector();
 
 void printObjectsInRangeToConsole();
+
+// March 27, Cody
+void setViewLookAt();
 
 // Entry point
 int main(int32_t argc, char** argv) {
@@ -124,14 +128,33 @@ void init(int32_t width, int32_t height) {
   // This will be repopulated every time the robot moves
   populateInRangeVector();
 
-  // Eye at Origin and looking -z axis
-  eX = 0;
-  eY = 0;
-  eZ = 0;
+  // set our offsets for the camera eye position
+  offX = 0.0;
+  offY = 5.0;
+  offZ = 5.0;
 
-  atX = 0;
-  atY = 0;
-  atZ = -1;
+  // set coordinates of eye position and what we are looking at (i.e. the robot)
+  setViewLookAt();
+
+  // Eye at Origin and looking -z axis
+  /*eX = 5;
+  eY = 5;
+  eZ = 5;*/
+
+  /* atX = 0;
+   atY = 0;
+   atZ = 0;*/
+
+  // set coordinates of what we are looking at
+  /*atX = theRobot.viewCoordinate3D().viewX();
+  atY = theRobot.viewCoordinate3D().viewY();
+  atZ = theRobot.viewCoordinate3D().viewZ();
+
+  // set coordinates of the eye position, using the robot coordinate3D and the
+  // offsets for each component x y z
+  eX = theRobot.viewCoordinate3D().viewX() + offX;
+  eY = theRobot.viewCoordinate3D().viewY() + offY;
+  eZ = theRobot.viewCoordinate3D().viewZ() + offZ;*/
 
   // Color to clear color buffer to.
   glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
@@ -153,6 +176,19 @@ void init(int32_t width, int32_t height) {
   resizeSceneCallback(width, height);
 }
 
+void setViewLookAt() {
+  // set coordinates of what we are looking at
+  atX = theRobot.viewCoordinate3D().viewX();
+  atY = theRobot.viewCoordinate3D().viewY();
+  atZ = theRobot.viewCoordinate3D().viewZ();
+
+  // set coordinates of the eye position, using the robot coordinate3D and the
+  // offsets for each component x y z
+  eX = theRobot.viewCoordinate3D().viewX() + offX;
+  eY = theRobot.viewCoordinate3D().viewY() + offY;
+  eZ = theRobot.viewCoordinate3D().viewZ() + offZ;
+}
+
 //---------------------------------------------------------- renderSceneCallback
 // Implementation notes:
 //  Essentially the draw function, a call to this represents a frame that will
@@ -169,17 +205,26 @@ void renderSceneCallback() {
     inRangeObject->draw();
   }
 
-  // Draw the robot
-  theRobot.draw();
-
-  // update the camera position based on robot's position?
-
   // Test begin
   gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 1.0, 0.0);
+  // glTranslatef(0.0f, 0.0f, -10.0f);
 
-  glTranslatef(0.0f, 0.0f, -10.0f);
+  // Draw the robot
+  theRobot.draw();
+  // glutSolidSphere(1, 20, 20);
 
-  glutSolidSphere(1, 20, 20);
+  // length of each axis to draw
+  double len = 2.0;
+  glColor3f(1.0, 1.0, 1.0);
+  glBegin(GL_LINES);
+  glVertex3d(0, 0, 0);
+  glVertex3d(len, 0, 0);
+  glVertex3d(0, 0, 0);
+  glVertex3d(0, len, 0);
+  glVertex3d(0, 0, 0);
+  glVertex3d(0, 0, len);
+  glEnd();
+
   // Test end
 
   glutSwapBuffers();
@@ -203,6 +248,7 @@ void resizeSceneCallback(int32_t width, int32_t height) {
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+
   gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
   glMatrixMode(GL_MODELVIEW);
@@ -217,6 +263,44 @@ void resizeSceneCallback(int32_t width, int32_t height) {
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
 void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
+  switch (key) {
+    // NOTE: assignment specifies the following key functions:
+    // 'a': at intersection, turn right; else do nothing
+    // 'q': at intersection, turn left; else do nothing
+    // 'z': push the robot forward, if possible (bound check), and update the
+    // camera
+    // since this is confusing as fuck, for now I'm using WASD layout, where 'w'
+    // moves forward, 'a' turns left, and 'd' turns right
+    // can change back later
+
+    case 'd': {  // at an intersection of the streets, turn the robot to the
+                 // right; if not at intersection, do nothing
+      theRobot.turnRobotRight();
+      break;
+    }
+    case 'a': {  // at an intersection of the streets, turn the robot to left;
+                 // if not at intersection, do nothing
+      theRobot.turnRobotLeft();
+      break;
+    }
+    case 'w': {  // push the robot forward
+      theRobot.moveRobotForward();
+      setViewLookAt();
+      break;
+    }
+    default:
+      std::cout << "KP: No action for " << key << std::endl;
+      break;
+  }
+}
+
+//---------------------------------------------------------- specialKeysCallback
+// Implementation notes:
+//  Called when any special keyboard event occurs. This is one of the functions
+//  that is used to process user inputs and apply changes to the state of the
+//  game.
+//------------------------------------------------------------------------------
+void specialKeysCallback(int32_t key, int32_t x, int32_t y) {
   switch (key) {
     case GLUT_KEY_F1: {
       break;
@@ -240,35 +324,6 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
       break;
     }
     case GLUT_KEY_F8: {
-      break;
-    }
-    default:
-      std::cout << "KP: No action for " << key << std::endl;
-      break;
-  }
-}
-
-//---------------------------------------------------------- specialKeysCallback
-// Implementation notes:
-//  Called when any special keyboard event occurs. This is one of the functions
-//  that is used to process user inputs and apply changes to the state of the
-//  game.
-//------------------------------------------------------------------------------
-void specialKeysCallback(int32_t key, int32_t x, int32_t y) {
-  switch (key) {
-    case 'a': {
-      break;
-    }
-    case 'p': {
-      break;
-    }
-    case 'q': {
-      break;
-    }
-    case 'r': {
-      break;
-    }
-    case 'z': {
       break;
     }
     default:

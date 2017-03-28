@@ -7,39 +7,12 @@
 //  #TODO
 //------------------------------------------------------------------------------
 Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
-  // initialize origin of the robot
-  origin[0] = (float)coordinate.viewX();
-  origin[1] = (float)coordinate.viewY();
-  origin[2] = (float)coordinate.viewZ();
-  // initialize the origin of the robot's head
-  originHead[0] = (float)origin[0] + baseHeight;
-  originHead[1] = (float)origin[1] + baseHeight;
-  originHead[2] = (float)origin[2] + baseHeight;
-  // initialize the vertices of the base of the robot
-  GLfloat bb[8][3] = {{baseWidth, origin[1] + baseHeight, baseWidth},
-                      {-baseWidth, origin[1] + baseHeight, baseWidth},
-                      {-baseWidth, origin[1], baseWidth},
-                      {baseWidth, origin[1], baseWidth},
-                      {baseWidth, origin[1] + baseHeight, -baseWidth},
-                      {-baseWidth, origin[1] + baseHeight, -baseWidth},
-                      {-baseWidth, origin[1], -baseWidth},
-                      {baseWidth, origin[1], -baseWidth}};
-  // initialize the vertices of the head of the robot
-  GLfloat hh[8][3] = {{headWidth, originHead[1] + headHeight, headWidth},
-                      {-headWidth, originHead[1] + headHeight, headWidth},
-                      {-headWidth, originHead[1], headWidth},
-                      {headWidth, originHead[1], headWidth},
-                      {headWidth, originHead[1] + headHeight, -headWidth},
-                      {-headWidth, originHead[1] + headHeight, -headWidth},
-                      {-headWidth, originHead[1], -headWidth},
-                      {headWidth, originHead[1], -headWidth}};
-  // write values into our member variables
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 3; j++) {
-      base[i][j] = bb[i][j];
-      head[i][j] = hh[i][j];
-    }
-  }
+  this->initializeRobot();
+}
+
+Robot::Robot(const Coordinate3D& coordinate, uint64_t gridMax)
+    : Object(coordinate), GRID_DIMENSION(gridMax) {
+  this->initializeRobot();
 }
 
 //------------------------------------------------------------------------- draw
@@ -105,23 +78,64 @@ void Robot::moveRobotForward() {
   int32_t y = this->m_coordinate3D.viewY() + this->dy[i];
   int32_t z = this->m_coordinate3D.viewZ() + this->dz[i];
 
+  // if in boundary, update the coordinate values
   if (robotInBound(x, y, z)) {
-    // update values
-    // HOW TO BEST DO THIS???
-    /*rx = x;
-    ry = y;
-    rz = z;*/
+    this->m_coordinate3D.setX(static_cast<int64_t>(x));
+    this->m_coordinate3D.setY(static_cast<int64_t>(y));
+    this->m_coordinate3D.setZ(static_cast<int64_t>(z));
   }
 }
 
 //--------------------------------------------------------------------------
 // helper functions
 //--------------------------------------------------------------------------
+// initalizes the vertice positions of the robots primitive components such as
+// the base and the head
+void Robot::initializeRobot() {
+  // initialize origin of the robot
+  origin[0] = (float)this->m_coordinate3D.viewX();
+  origin[1] = (float)this->m_coordinate3D.viewY();
+  origin[2] = (float)this->m_coordinate3D.viewZ();
+  // initialize the origin of the robot's head
+  originHead[0] = (float)origin[0] + baseHeight;
+  originHead[1] = (float)origin[1] + baseHeight;
+  originHead[2] = (float)origin[2] + baseHeight;
+  // initialize the vertices of the base of the robot
+  GLfloat bb[8][3] = {{baseWidth, origin[1] + baseHeight, baseWidth},
+                      {-baseWidth, origin[1] + baseHeight, baseWidth},
+                      {-baseWidth, origin[1], baseWidth},
+                      {baseWidth, origin[1], baseWidth},
+                      {baseWidth, origin[1] + baseHeight, -baseWidth},
+                      {-baseWidth, origin[1] + baseHeight, -baseWidth},
+                      {-baseWidth, origin[1], -baseWidth},
+                      {baseWidth, origin[1], -baseWidth}};
+  // initialize the vertices of the head of the robot
+  GLfloat hh[8][3] = {{headWidth, originHead[1] + headHeight, headWidth},
+                      {-headWidth, originHead[1] + headHeight, headWidth},
+                      {-headWidth, originHead[1], headWidth},
+                      {headWidth, originHead[1], headWidth},
+                      {headWidth, originHead[1] + headHeight, -headWidth},
+                      {-headWidth, originHead[1] + headHeight, -headWidth},
+                      {-headWidth, originHead[1], -headWidth},
+                      {headWidth, originHead[1], -headWidth}};
+  // write values into our member variables
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 3; j++) {
+      base[i][j] = bb[i][j];
+      head[i][j] = hh[i][j];
+    }
+  }
+}
 
-// returns true
-// TODO: Add implementation, needs to return false if the coordinates given are
-// "out of boundary", which implies the move should not be allowed
-bool Robot::robotInBound(int32_t x, int32_t y, int32_t z) { return true; }
+// Return false if the coordinates given are "out of boundary", which implies
+// the move should not be allowed
+bool Robot::robotInBound(int32_t x, int32_t y, int32_t z) {
+  if (x < 0 || x >= GRID_DIMENSION || y < 0 || y >= GRID_DIMENSION || z < 0 ||
+      z >= GRID_DIMENSION) {
+    return false;
+  }
+  return true;
+}
 
 // uses the vertices stored in private member base to draw the base of the
 // robot as specified in the assignment.  Note this allow draws the extra

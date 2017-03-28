@@ -21,6 +21,9 @@ class Robot : public Object {
   //--------------------------------------------------------------------------
   Robot(const Coordinate3D& coordinate);
 
+  // Constructor that also sets the maximum grid dimensions for the robot
+  Robot(const Coordinate3D& coordinate, const uint64_t gridMax);
+
   //--------------------------------------------------------------------- draw
   // Brief Description
   //  Draws the Robot to the screen at its X Y Z coordinates.
@@ -70,6 +73,10 @@ class Robot : public Object {
   //--------------------------------------------------------------------------
   // helper functions
   //--------------------------------------------------------------------------
+  // initalizes the vertice positions of the robots primitive components such as
+  // the base and the head
+  void initializeRobot();
+
   bool robotInBound(
       int32_t x, int32_t y,
       int32_t z);  // TODO: add implementation based on boundary of grid
@@ -84,6 +91,12 @@ class Robot : public Object {
   // robot.  TODO: add the neck piece, the cylinder eyes, and the rotating
   // antenna.
   void drawRobotHead();
+
+  // the maximum dimensions for the "city" or grid that the robot will be moving
+  // on, coordinates x and y that are greater than or equal to the grid max are
+  // deemed invalid locations and boundary checks shall be done to prevent such
+  // moves
+  uint64_t GRID_DIMENSION;
 
   // enables turning
   bool robotAtIntersection = true;
