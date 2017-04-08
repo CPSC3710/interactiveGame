@@ -24,25 +24,43 @@ Robot::Robot(
 
 	// initialize the vertices of the base of the robot
 	GLfloat bb[8][3] = {
-		{baseWidth, origin[1] + baseHeight, baseWidth},
-		{-baseWidth, origin[1] + baseHeight, baseWidth},
-		{-baseWidth, origin[1], baseWidth},
-		{baseWidth, origin[1], baseWidth},
-		{baseWidth, origin[1] + baseHeight, -baseWidth},
-		{-baseWidth, origin[1] + baseHeight, -baseWidth},
-		{-baseWidth, origin[1], -baseWidth},
-		{baseWidth, origin[1], -baseWidth}};
+		//{baseWidth, origin[1] + baseHeight, baseWidth},
+		//{-baseWidth, origin[1] + baseHeight, baseWidth},
+		//{-baseWidth, origin[1], baseWidth},
+		//{baseWidth, origin[1], baseWidth},
+		//{baseWidth, origin[1] + baseHeight, -baseWidth},
+		//{-baseWidth, origin[1] + baseHeight, -baseWidth},
+		//{-baseWidth, origin[1], -baseWidth},
+		//{baseWidth, origin[1], -baseWidth}
+		{baseWidth, baseWidth, origin[2]}, //first 4 are bottom
+		{ -baseWidth, baseWidth, origin[2] },
+		{ -baseWidth, -baseWidth, origin[2] },
+		{ baseWidth, -baseWidth, origin[2] },
+		{ baseWidth, baseWidth, origin[2] + baseHeight }, // last 4 are top
+		{ -baseWidth, baseWidth, origin[2] + baseHeight },
+		{- baseWidth, -baseWidth, origin[2] + baseHeight },
+		{ baseWidth, -baseWidth, origin[2] + baseHeight }
+	};
 
 	// initialize the vertices of the head of the robot
 	GLfloat hh[8][3] = {
-		{headWidth, originHead[1] + headHeight, headWidth},
-		{-headWidth, originHead[1] + headHeight, headWidth},
-		{-headWidth, originHead[1], headWidth},
-		{headWidth, originHead[1], headWidth},
-		{headWidth, originHead[1] + headHeight, -headWidth},
-		{-headWidth, originHead[1] + headHeight, -headWidth},
-		{-headWidth, originHead[1], -headWidth},
-		{headWidth, originHead[1], -headWidth}};
+		//{headWidth, originHead[1] + headHeight, headWidth},
+		//{-headWidth, originHead[1] + headHeight, headWidth},
+		//{-headWidth, originHead[1], headWidth},
+		//{headWidth, originHead[1], headWidth},
+		//{headWidth, originHead[1] + headHeight, -headWidth},
+		//{-headWidth, originHead[1] + headHeight, -headWidth},
+		//{-headWidth, originHead[1], -headWidth},
+		//{headWidth, originHead[1], -headWidth}
+		{ headWidth, headWidth, originHead[2] }, // first 4 are bottom
+		{ -headWidth, headWidth, originHead[2] },
+		{ -headWidth, -headWidth, originHead[2] },
+		{ headWidth, -headWidth, originHead[2] },
+		{ headWidth, headWidth, originHead[2] + headHeight },	// Last 4 are top
+		{ -headWidth, headWidth, originHead[2] + headHeight },
+		{ -headWidth, -headWidth, originHead[2] + headHeight },
+		{ headWidth, -headWidth, originHead[2] + headHeight }
+	};
 
 	// write values into our member variables
 	for(uint64_t i = 0; i < 8; i++)
@@ -71,8 +89,8 @@ void Robot::draw()
 	glRotatef(
 		static_cast<float>(this->angleRobotBase),
 		0, 
-		1,
-		0);
+		0,
+		1);
 
 	// draw robot head and rotate based on parameters set by key presses
 	glPushMatrix();
@@ -80,8 +98,8 @@ void Robot::draw()
 	glRotatef(
 		static_cast<float>(this->angleRobotHead),
 		0,
-		1,
-		0);
+		0,
+		1);
 
 	this->drawHead();
 
@@ -212,25 +230,25 @@ void Robot::drawBase()
 
 	// for triangles to be drawn on back of robot
 	GLfloat tri[3][3] = {
-		{this->base[2][0] * fact, 
-		this->base[2][1] + offy,
-		static_cast<float>(this->base[2][2] * 1.001)},
 		{this->base[3][0] * fact, 
-		this->base[3][1] + offy,
-		static_cast<float>(this->base[3][2] * 1.001)},
+		this->base[3][1] * 1.001,
+		static_cast<float>(this->base[3][2]) + offy },
+		{this->base[2][0] * fact, 
+		this->base[2][1] * 1.001,
+		static_cast<float>(this->base[2][2]) + offy },
 		{0.0,
-		static_cast<float>(this->base[1][1] * 0.25),
-		static_cast<float>(this->base[3][2] * 1.001)}};
+		static_cast<float>(this->base[7][1] * 1.001),
+		static_cast<float>(this->base[6][2] * 0.25)}};
 
 	// 6 cube faces
 	glBegin(GL_QUADS);
 
 	// yellow - back of the robot
 	glColor3f(1.0, 1.0, 0.0);
-	glVertex3fv(this->base[0]);
-	glVertex3fv(this->base[1]);
 	glVertex3fv(this->base[2]);
 	glVertex3fv(this->base[3]);
+	glVertex3fv(this->base[7]);
+	glVertex3fv(this->base[6]);
 
 	glEnd();
 
@@ -239,15 +257,15 @@ void Robot::drawBase()
 
 	// bottom triangle
 	glColor3f(1.0, 0.0, 0.0);
-	glVertex3fv(tri[0]);
-	glVertex3fv(tri[1]);
 	glVertex3fv(tri[2]);
+	glVertex3fv(tri[1]);
+	glVertex3fv(tri[0]);
 
 	// top triangle
 	float off2 = 0.55;
-	glVertex3f(tri[0][0], tri[0][1] + off2, tri[0][2]);
-	glVertex3f(tri[1][0], tri[1][1] + off2, tri[1][2]);
-	glVertex3f(tri[2][0], tri[2][1] + off2, tri[2][2]);
+	glVertex3f(tri[2][0], tri[2][1], tri[2][2] + off2);
+	glVertex3f(tri[1][0], tri[1][1], tri[1][2] + off2);
+	glVertex3f(tri[0][0], tri[0][1], tri[0][2] + off2);
 
 	glEnd();
 
@@ -255,49 +273,49 @@ void Robot::drawBase()
 
 	// red - front of the robot
 	glColor3f(1.0, 0.0, 0.0);
+	glVertex3fv(this->base[0]);
+	glVertex3fv(this->base[1]);
 	glVertex3fv(this->base[5]);
 	glVertex3fv(this->base[4]);
-	glVertex3fv(this->base[7]);
-	glVertex3fv(this->base[6]);
 
 	// green - inner rect on front
 	glColor3f(0.0, 1.0, 0.0);
-	glVertex3f(this->base[5][0] * front, this->base[5][1] * front,
-		this->base[5][2] * 1.001);
-	glVertex3f(this->base[4][0] * front, this->base[4][1] * front,
-		this->base[4][2] * 1.001);
-	glVertex3f(this->base[7][0] * front, this->base[7][1] * front,
-		this->base[7][2] * 1.001);
-	glVertex3f(this->base[6][0] * front, this->base[6][1] * front,
-		this->base[6][2] * 1.001);
+	glVertex3f(this->base[0][0] * front, this->base[0][1] * 1.001,
+		this->base[0][2] * front);
+	glVertex3f(this->base[1][0] * front, this->base[1][1] * 1.001,
+		this->base[1][2] * front);
+	glVertex3f(this->base[5][0] * front, this->base[5][1] * 1.001,
+		this->base[5][2] * front);
+	glVertex3f(this->base[4][0] * front, this->base[4][1] * 1.001,
+		this->base[4][2] * front);
 
-	// green
+	// green - right
 	glColor3f(0.0, 1.0, 0.0);
-	glVertex3fv(this->base[4]);
 	glVertex3fv(this->base[0]);
-	glVertex3fv(this->base[3]);
+	glVertex3fv(this->base[4]);
 	glVertex3fv(this->base[7]);
+	glVertex3fv(this->base[3]);
 
-	// blue
+	// blue - left
 	glColor3f(0.0, 0.0, 1.0);
 	glVertex3fv(this->base[1]);
-	glVertex3fv(this->base[5]);
-	glVertex3fv(this->base[6]);
 	glVertex3fv(this->base[2]);
+	glVertex3fv(this->base[6]);
+	glVertex3fv(this->base[5]);
 
-	// light blue
+	// light blue - top
 	glColor3f(0.0, 1.0, 1.0);
 	glVertex3fv(this->base[4]);
 	glVertex3fv(this->base[5]);
-	glVertex3fv(this->base[1]);
-	glVertex3fv(this->base[0]);
-
-	// pink
-	glColor3f(1.0, 0.0, 1.0);
-	glVertex3fv(this->base[3]);
-	glVertex3fv(this->base[2]);
 	glVertex3fv(this->base[6]);
 	glVertex3fv(this->base[7]);
+
+	// pink - bottom
+	glColor3f(1.0, 0.0, 1.0);
+	glVertex3fv(this->base[0]);
+	glVertex3fv(this->base[3]);
+	glVertex3fv(this->base[2]);
+	glVertex3fv(this->base[1]);
 
 	glEnd();
 }
@@ -314,47 +332,47 @@ void Robot::drawHead()
 	// 6 cube faces
 	glBegin(GL_QUADS);
 
-	// green - back of the robot head
-	glColor3f(0.0, 1.0, 0.0);
-	glVertex3fv(this->head[0]);
-	glVertex3fv(this->head[1]);
+	// yellow - back of the robot head
+	glColor3f(1.0, 1.0, 0.0);
 	glVertex3fv(this->head[2]);
 	glVertex3fv(this->head[3]);
+	glVertex3fv(this->head[7]);
+	glVertex3fv(this->head[6]);
 
 	// red - front of the robot face
 	glColor3f(1.0, 0.0, 0.0);
-	glVertex3fv(this->head[5]);
-	glVertex3fv(this->head[4]);
-	glVertex3fv(this->head[7]);
-	glVertex3fv(this->head[6]);
-
-	// pink
-	glColor3f(1.0, 0.0, 1.0);
-	glVertex3fv(this->head[4]);
 	glVertex3fv(this->head[0]);
-	glVertex3fv(this->head[3]);
-	glVertex3fv(this->head[7]);
-
-	// blue
-	glColor3f(0.0, 0.0, 1.0);
 	glVertex3fv(this->head[1]);
 	glVertex3fv(this->head[5]);
-	glVertex3fv(this->head[6]);
-	glVertex3fv(this->head[2]);
+	glVertex3fv(this->head[4]);
 
-	// light blue
+	// green - right
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3fv(this->head[0]);
+	glVertex3fv(this->head[4]);
+	glVertex3fv(this->head[7]);
+	glVertex3fv(this->head[3]);
+
+	// blue - left
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3fv(this->head[1]);
+	glVertex3fv(this->head[2]);
+	glVertex3fv(this->head[6]);
+	glVertex3fv(this->head[5]);
+
+	// light blue - top
 	glColor3f(0.0, 1.0, 1.0);
 	glVertex3fv(this->head[4]);
 	glVertex3fv(this->head[5]);
-	glVertex3fv(this->head[1]);
-	glVertex3fv(this->head[0]);
-
-	// pink
-	glColor3f(1.0, 0.0, 1.0);
-	glVertex3fv(this->head[3]);
-	glVertex3fv(this->head[2]);
 	glVertex3fv(this->head[6]);
 	glVertex3fv(this->head[7]);
+
+	// pink - bottom
+	glColor3f(1.0, 0.0, 1.0);
+	glVertex3fv(this->head[0]);
+	glVertex3fv(this->head[3]);
+	glVertex3fv(this->head[2]);
+	glVertex3fv(this->head[1]);
 
 	glEnd();
 }

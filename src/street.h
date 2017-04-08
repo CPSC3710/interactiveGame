@@ -55,6 +55,9 @@ public:
 	const Coordinate3D& viewCoordinate3D() const;
 
 private:
+	GLdouble m_origin[3];
+	GLdouble m_baseWidth = 0.4;
 
+	GLdouble m_streetVert[4][3];
 };
 #endif

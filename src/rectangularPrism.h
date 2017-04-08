@@ -55,6 +55,11 @@ public:
 	const Coordinate3D& viewCoordinate3D() const;
 
 private:
+	GLdouble m_origin[3];
+	GLdouble m_baseHeight = 5;
+	GLdouble m_baseWidth = 0.5;
+
+	GLdouble rectVerts[8][3];
 
 };
 
