@@ -87,6 +87,8 @@ void printObjectsInRangeToConsole();
 
 void setViewLookAt();
 
+void removeObjectAtIndex(int32_t index);
+
 // DEBUG====================
 /*void timer(int value);*/
 // DEBUG====================
@@ -234,7 +236,15 @@ eZ = 5;*/
 //  Essentially the draw function, a call to this represents a frame that will
 //  be displayed to the screen.
 //------------------------------------------------------------------------------
+Cylinder *cc = nullptr;
+
 void renderSceneCallback() {
+
+   if (!cc) {
+      cc = new Cylinder(Coordinate3D(0, 0, 0));
+      cc->setScale(1, 2, 1);
+   }
+   
   // Clear the color and depth buffers.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
@@ -274,6 +284,14 @@ void renderSceneCallback() {
   theRobot.draw();
   glPopName();
   glPopMatrix();
+
+  if (cc) {
+     glPushMatrix();
+     glPushName(4);
+     cc->draw();
+     glPopName();
+     glPopMatrix();
+  }
 
   // length of each axis to draw.  For debugging only (remove later).
   // X - red
@@ -539,8 +557,8 @@ static void mousePick(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY) {
   GLint hits;
   GLint i, j, k;
 
-  GLint min = -1;
-  GLuint minZ = -1;
+  // GLint min = -1;
+  // GLuint minZ = -1;
 
   glSelectBuffer(bufferSize, buffer); /* Selection buffer for hit records */
   glRenderMode(GL_SELECT);            /* OpenGL selection mode            */
@@ -561,46 +579,76 @@ static void mousePick(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY) {
 
   hits = glRenderMode(GL_RENDER); /* Return to normal rendering mode  */
 
-  // debug
+  bool isHit = false;
+  int32_t ans;
+  int32_t ans_min;
+  
   if (hits != 0) {
     printf("hits = %d\n", hits);
 
     for (i = 0, j = 0; i < hits; i++) {
+       if (buffer[j] > 0) {
+	  if (!isHit) {
+	     ans_min = static_cast<int32_t>(buffer[j+1]);
+	     ans = static_cast<int32_t>(buffer[j+3]);
+	     isHit = true;
+	  } else {
+	     if (static_cast<int32_t>(buffer[j+1]) < ans_min) {
+		ans_min = static_cast<int32_t>(buffer[j+1]);
+		ans = static_cast<int32_t>(buffer[j+3]);
+	     }
+	  }
+       }
       printf("\tsize = %u, min = %u, max = %u : ", buffer[j], buffer[j + 1],
              buffer[j + 2]);
-      for (k = 0; k < (GLint)buffer[j]; k++) printf("%u ", buffer[j + 3 + k]);
+
+      for (k = 0; k < (GLint)buffer[j]; k++) {
+	 std::cout << (int)buffer[j+3+k] << " ";
+      	 // printf("%u ", buffer[j + 3 + k]);
+      }
       printf("\n");
 
       j += 3 + buffer[j];
     }
   }
 
-  /* Determine the nearest hit */
-
-  if (hits) {
-    for (i = 0, j = 0; i < hits; i++) {
-      if (buffer[j + 1] < minZ) {
-        /* If name stack is empty, return -1                */
-        /* If name stack is not empty, return top-most name */
-
-        if (buffer[j] == 0)
-          min = -1;
-        else
-          min = buffer[j + 2 + buffer[j]];
-
-        minZ = buffer[j + 1];
-      }
-
-      j += buffer[j] + 3;
-    }
+  if (isHit && ans > 1) {
+     std::cout << "ans: " << ans << std::endl;
+     removeObjectAtIndex(ans);
+  } else {
+     std::cout << "no valid hits\n";
   }
+  
+  // printf("closest: %i, with min: %i\n", closest, cmin);
+
+  /* Determine the nearest hit */
+  // if (hits) {
+  //   for (i = 0, j = 0; i < hits; i++) {
+  //     if (buffer[j + 1] < minZ) {
+  //       /* If name stack is empty, return -1                */
+  //       /* If name stack is not empty, return top-most name */
+  //       if (buffer[j] == 0)
+  //         min = -1;
+  //       else
+  //         min = buffer[j + 2 + buffer[j]];
+  //       minZ = buffer[j + 1];
+  //     }
+  //     j += buffer[j] + 3;
+  //   }
+  // }
 
   glMatrixMode(GL_PROJECTION);
   glPopMatrix(); /* Restore projection matrix           */
   glMatrixMode(GL_MODELVIEW);
 
-  if (pick) pick(min); /* Pass pick event back to application */
+  //if (pick) pick(min); /* Pass pick event back to application */
 }
+
+void removeObjectAtIndex(int32_t index) {
+   
+}
+
+
 
 //----------------------------------------------------------------- populateGrid
 // Implementation notes:

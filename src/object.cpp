@@ -6,3 +6,7 @@ Object::Object(
 {
 
 }
+
+bool Object::isDestroyable() const {
+   return false;
+}

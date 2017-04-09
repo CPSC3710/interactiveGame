@@ -52,7 +52,9 @@ public:
 	// Access:    public 
 	// Returns:   const Coordinate3D&
 	//--------------------------------------------------------------------------
-	virtual const Coordinate3D& viewCoordinate3D() const = 0;
+   virtual const Coordinate3D& viewCoordinate3D() const = 0;
+
+   virtual bool isDestroyable() const;
 
 protected:
 	Coordinate3D m_coordinate3D;

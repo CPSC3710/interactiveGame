@@ -96,8 +96,10 @@ void Robot::draw() {
 
   // draw neck piece
   glPushMatrix();
+  // glPushName(3);
   glTranslatef(0, 1.3, 0);
   m_neck.draw();
+  // glPopName();
   glPopMatrix();
 
   // draw antenna
