@@ -19,12 +19,7 @@ Cylinder::Cylinder(
 //------------------------------------------------------------------------------
 void Cylinder::draw()
 {
-	//GLUquadric* quad = gluNewQuadric();
-	//gluQuadricNormals(quad, GLU_SMOOTH);
-	//glPushMatrix();
-	//glRotated(90., 1., 0., 0.);
-	//gluCylinder(quad, 1, 1, 2, 36, 12);
-	//glPopMatrix();
+
 }
 
 //------------------------------------------------------------------------ Print

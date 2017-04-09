@@ -15,10 +15,10 @@
 #include <vector>
 
 // Switch these includes for Linux and Windows
-#include <GL\glut.h> //Windows version
-//#include <GL/gl.h>    // OpenGL itself. Linux
-//#include <GL/glu.h>   // GLU support library. Linux
-//#include <GL/glut.h>  // GLUT support library. Linux
+//#include <GL\glut.h> //Windows version
+#include <GL/gl.h>    // OpenGL itself. Linux
+#include <GL/glu.h>   // GLU support library. Linux
+#include <GL/glut.h>  // GLUT support library. Linux
 
 // Project includes
 #include "coordinate3d.h"
@@ -192,7 +192,7 @@ void renderSceneCallback()
 	}
 
 	// Test begin
-	gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 0.0, 1.0);
+	gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 1.0, 0.0);
 	// glTranslatef(0.0f, 0.0f, -10.0f);
 
 	// Draw the robot
@@ -289,11 +289,6 @@ void keyboardCallback(
 			setViewLookAt();
 			break;
 		}
-		
-		case 27:
-			glutDestroyWindow(WINDOW_ID);
-			exit(1);
-			break;
 		default:
 		{
 			std::cout << "KP: No action for " << key << std::endl;
@@ -329,42 +324,22 @@ void specialKeysCallback(
 		}
 		case GLUT_KEY_F4:
 		{
-			offX = 0;
-			offY = 5;
-			offZ = 5;
-			setViewLookAt();
 			break;
 		}
 		case GLUT_KEY_F5:
 		{
-			offX = -5;
-			offY = 5;
-			offZ = 5;
-			setViewLookAt();
 			break;
 		}
 		case GLUT_KEY_F6:
 		{
-			offX = 5;
-			offY = 5;
-			offZ = 5;
-			setViewLookAt();
 			break;
 		}
 		case GLUT_KEY_F7:
 		{
-			offX = 5;
-			offY = -5;
-			offZ = 5;
-			setViewLookAt();
 			break;
 		}
 		case GLUT_KEY_F8:
 		{
-			offX = -5;
-			offY = -5;
-			offZ = 5;
-			setViewLookAt();
 			break;
 		}
 		default:
