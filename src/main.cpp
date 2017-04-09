@@ -200,15 +200,13 @@ void renderSceneCallback()
 	// glutSolidSphere(1, 20, 20);
 
 	// length of each axis to draw
-	double len = 3.0;
+	double len = 2.0;
+	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
 	glVertex3d(0, 0, 0);
 	glVertex3d(len, 0, 0);
-	glColor3f(0.0, 1.0, 0.0);
 	glVertex3d(0, 0, 0);
 	glVertex3d(0, len, 0);
-	glColor3f(0.0, 0.0, 1.0);
 	glVertex3d(0, 0, 0);
 	glVertex3d(0, 0, len);
 	glEnd();

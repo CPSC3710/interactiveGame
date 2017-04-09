@@ -3,10 +3,9 @@
 
 #include "object.h"
 
-#include<GL\glut.h>
-//#include <GL/gl.h>    // OpenGL itself. Linux
-//#include <GL/glu.h>   // GLU support library. Linux
-//#include <GL/glut.h>  // GLUT support library. Linux
+#include <GL/gl.h>    // OpenGL itself. Linux
+#include <GL/glu.h>   // GLU support library. Linux
+#include <GL/glut.h>  // GLUT support library. Linux
 
 class Robot : public Object
 {
