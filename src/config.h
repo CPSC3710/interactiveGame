@@ -1,9 +1,20 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// linux
+#ifdef __linux__
+
 #include <GL/gl.h>    // OpenGL itself. Linux
 #include <GL/glu.h>   // GLU support library. Linux
 #include <GL/glut.h>  // GLUT support library. Linux
+
+// windows
+#else
+
+#include <GL\glut.h> // Windows version
+
+#endif
+
 #include <cstdint>
 
 // Global Variables
