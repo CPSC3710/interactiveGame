@@ -39,10 +39,11 @@
 int32_t WINDOW_ID;
 int32_t WINDOW_WIDTH = 1024;
 int32_t WINDOW_HEIGHT = 600;
+int32_t WIREFRAME_MODE = 1;
 
 Object* objectGrid[GRID_DIMENSIONS][GRID_DIMENSIONS];
 
-SampleShape myshape(Coordinate3D(0, 0, 0));
+/*SampleShape myshape(Coordinate3D(0, 0, 0));*/
 Debug mydebug;
 Robot theRobot(Coordinate3D(0, 0, 0));
 std::vector<Object*> objectsInRange;
@@ -60,6 +61,8 @@ void resizeSceneCallback(int32_t width, int32_t height);
 void keyboardCallback(unsigned char key, int32_t x, int32_t y);
 
 void specialKeysCallback(int32_t key, int32_t x, int32_t y);
+
+void specialKeysUpCallback(int32_t key, int32_t x, int32_t y);
 
 void mouseCallback(int32_t button, int32_t state, int32_t x, int32_t y);
 
@@ -104,6 +107,7 @@ int main(int32_t argc, char** argv) {
   // register and install functions for keyboard and mouse input
   glutKeyboardFunc(&keyboardCallback);
   glutSpecialFunc(&specialKeysCallback);
+  glutSpecialUpFunc(&specialKeysUpCallback);
   glutMouseFunc(&mouseCallback);
 
   // My init
@@ -147,9 +151,9 @@ void init(int32_t width, int32_t height) {
   populateInRangeVector();
 
   // set our offsets for the camera eye position
-  offX = 5.0;
+  offX = -5.0;
   offY = 5.0;
-  offZ = 5.0;
+  offZ = -3.0;
 
   // set coordinates of eye position and what we are looking at (i.e. the robot)
   setViewLookAt();
@@ -215,8 +219,16 @@ void renderSceneCallback() {
   // glTranslatef(0.0f, 0.0f, -10.0f);
 
   // Draw the robot
+
+  // wireframe to see the rotations better
+  if (WIREFRAME_MODE) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  } else {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
+
   theRobot.draw();
-  myshape.draw();
+  // myshape.draw();
   // glutSolidSphere(1, 20, 20);
 
   // length of each axis to draw
@@ -309,6 +321,11 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
       setViewLookAt();
       break;
     }
+    // DEBUG============WIREFRAME MODE TOGGLE
+    case 'm': {
+      WIREFRAME_MODE = 1 - WIREFRAME_MODE;
+      break;
+    }
     default: {
       std::cout << "KP: No action for " << key << std::endl;
       break;
@@ -325,12 +342,51 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
 void specialKeysCallback(int32_t key, int32_t x, int32_t y) {
   switch (key) {
     case GLUT_KEY_F1: {
+      theRobot.turnHeadForward();
       break;
     }
     case GLUT_KEY_F2: {
+      theRobot.turnHeadRight();
       break;
     }
     case GLUT_KEY_F3: {
+      theRobot.turnHeadLeft();
+      break;
+    }
+    case GLUT_KEY_F4: {
+      break;
+    }
+    case GLUT_KEY_F5: {
+      break;
+    }
+    case GLUT_KEY_F6: {
+      break;
+    }
+    case GLUT_KEY_F7: {
+      break;
+    }
+    case GLUT_KEY_F8: {
+      break;
+    }
+    default: {
+      std::cout << "SKP: No action for " << key << std::endl;
+      break;
+    }
+  }
+}
+
+void specialKeysUpCallback(int32_t key, int32_t x, int32_t y) {
+  switch (key) {
+    case GLUT_KEY_F1: {
+      theRobot.turnHeadForward();
+      break;
+    }
+    case GLUT_KEY_F2: {
+      theRobot.turnHeadForward();
+      break;
+    }
+    case GLUT_KEY_F3: {
+      theRobot.turnHeadForward();
       break;
     }
     case GLUT_KEY_F4: {

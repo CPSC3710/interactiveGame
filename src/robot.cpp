@@ -46,6 +46,21 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
       head[i][j] = hh[i][j];
     }
   }
+
+  // configure antenna
+  m_antenna.setScale(0.1, 0.4, 0.1);
+  m_antenna.setRotate(-90, 1, 0, 0);
+  m_antenna.setRotateDelta(0, 0, 0, 1, 0.3);
+
+  // configure eyes
+  m_eyeLeft.setScale(0.07, 0.07, 0.07);
+  m_eyeLeft.setRotate(180, 0, 1, 0);
+  m_eyeRight.setScale(0.07, 0.07, 0.07);
+  m_eyeRight.setRotate(180, 0, 1, 0);
+
+  // configure neck piece
+  m_neck.setScale(0.25, 0.2, 0.25);
+  m_neck.setRotate(-90, 1, 0, 0);
 }
 
 //------------------------------------------------------------------------- draw
@@ -53,22 +68,46 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
 //  #TODO
 //------------------------------------------------------------------------------
 void Robot::draw() {
-  /*glPushMatrix();
+  glPushMatrix();
   glTranslatef(static_cast<float>(this->m_coordinate3D.viewX()),
                static_cast<float>(this->m_coordinate3D.viewY()),
                static_cast<float>(this->m_coordinate3D.viewZ()));
-
   glRotatef(static_cast<float>(this->angleRobotBase), 0, 1, 0);
+
   // draw robot head and rotate based on parameters set by key presses
   glPushMatrix();
+  glTranslatef(0, 0.13, 0);  // move up for neck piece
   glRotatef(static_cast<float>(this->angleRobotHead), 0, 1, 0);
   this->drawHead();
-  glPopMatrix();
-  // draw robot base, at the position specified by rx ry rz, this
-  // also moves the head with it
-  this->drawBase();
 
-  glPopMatrix();*/
+  // draw neck piece
+  glPushMatrix();
+  glTranslatef(0, 1.3, 0);
+  m_neck.draw();
+  glPopMatrix();
+
+  // draw antenna
+  glPushMatrix();
+  glTranslatef(0, 1.9, 0);
+  m_antenna.draw();
+  glPopMatrix();
+
+  // draw eyes
+  glPushMatrix();
+  glTranslatef(0, 1.75, -0.35);  // shifting reference frame to eye position
+  glPushMatrix();
+  glTranslatef(-0.1, 0, 0);  // shift left eye to left
+  m_eyeLeft.draw();
+  glPopMatrix();  // done left eye
+  glPushMatrix();
+  glTranslatef(0.1, 0, 0);  // shift right eye to right
+  m_eyeRight.draw();
+  glPopMatrix();  // done right eye
+  glPopMatrix();  // done both eyes
+  glPopMatrix();  // done drawing head
+
+  this->drawBase();
+  glPopMatrix();
 }
 
 //------------------------------------------------------------------------ print
@@ -134,6 +173,10 @@ void Robot::attemptMoveForward() {
     this->m_coordinate3D.setZ(static_cast<int64_t>(z));
   }
 }
+
+void Robot::turnHeadRight() { this->angleRobotHead = -45; }
+void Robot::turnHeadLeft() { this->angleRobotHead = 45; }
+void Robot::turnHeadForward() { this->angleRobotHead = 0; }
 
 //------------------------------------------------------- positionIsWithinBounds
 // Implementation notes:

@@ -1,6 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include "cylinder.h"
 #include "object.h"
 
 #include <GL/gl.h>    // OpenGL itself. Linux
@@ -95,6 +96,11 @@ class Robot : public Object {
   //--------------------------------------------------------------------------
   void attemptMoveForward();
 
+  // Cody Barnson, Apr 8, 2017
+  void turnHeadRight();
+  void turnHeadLeft();
+  void turnHeadForward();
+
  private:
   //--------------------------------------------------- positionIsWithinBounds
   // Brief Description
@@ -164,6 +170,11 @@ class Robot : public Object {
 
   GLfloat base[8][3];
   GLfloat head[8][3];
+
+  Cylinder m_antenna = Cylinder(Coordinate3D(0, 0, 0));
+  Cylinder m_eyeLeft = Cylinder(Coordinate3D(0, 0, 0));
+  Cylinder m_eyeRight = Cylinder(Coordinate3D(0, 0, 0));
+  Cylinder m_neck = Cylinder(Coordinate3D(0, 0, 0));
 };
 
 #endif
