@@ -38,17 +38,6 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
                       {-baseWidth, origin[1], -baseWidth},
                       {baseWidth, origin[1], -baseWidth}};
 
-  // initialize the vertices of the base of the robot
-  /*GLfloat bb[8][3] = {
-      {baseWidth, baseWidth, origin[2]},  // first 4 are bottom
-      {-baseWidth, baseWidth, origin[2]},
-      {-baseWidth, -baseWidth, origin[2]},
-      {baseWidth, -baseWidth, origin[2]},
-      {baseWidth, baseWidth, origin[2] + baseHeight},  // last 4 are top
-      {-baseWidth, baseWidth, origin[2] + baseHeight},
-      {-baseWidth, -baseWidth, origin[2] + baseHeight},
-      {baseWidth, -baseWidth, origin[2] + baseHeight}};*/
-
   // initialize the vertices of the head of the robot
   GLfloat hh[8][3] = {{headWidth, originHead[1] + headHeight, headWidth},
                       {-headWidth, originHead[1] + headHeight, headWidth},
@@ -58,17 +47,6 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
                       {-headWidth, originHead[1] + headHeight, -headWidth},
                       {-headWidth, originHead[1], -headWidth},
                       {headWidth, originHead[1], -headWidth}};
-
-  // initialize the vertices of the head of the robot
-  /*GLfloat hh[8][3] = {
-      {headWidth, headWidth, originHead[2]},  // first 4 are bottom
-      {-headWidth, headWidth, originHead[2]},
-      {-headWidth, -headWidth, originHead[2]},
-      {headWidth, -headWidth, originHead[2]},
-      {headWidth, headWidth, originHead[2] + headHeight},  // Last 4 are top
-      {-headWidth, headWidth, originHead[2] + headHeight},
-      {-headWidth, -headWidth, originHead[2] + headHeight},
-      {headWidth, -headWidth, originHead[2] + headHeight}};*/
 
   // write values into our member variables
   for (uint64_t i = 0; i < 8; i++) {
@@ -81,7 +59,7 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
   // configure antenna
   m_antenna.setScale(0.1, 0.4, 0.1);
   m_antenna.setRotate(-90, 1, 0, 0);
-  m_antenna.setRotateDelta(0, 0, 0, 1, 0.3);
+  m_antenna.setRotateDelta(0, 0, 0, 1, ROBOT_ANTENNA_ROTATE_DELTA);
 
   // configure eyes
   m_eyeLeft.setScale(0.07, 0.07, 0.07);
@@ -116,14 +94,6 @@ void Robot::draw() {
   glRotatef(static_cast<float>(this->angleRobotHead), 0, 1, 0);
   this->drawHead();
 
-  /*glPushMatrix();
-  glTranslatef(0, .5 - .13, 0);
-  glScalef(.6, .6, .6);
-  m_body.draw();
-  glPopMatrix();*/
-
-  // m_body.draw();
-
   // draw neck piece
   glPushMatrix();
   glTranslatef(0, 1.3, 0);
@@ -154,6 +124,12 @@ void Robot::draw() {
   glPopMatrix();
 }
 
+void Robot::resetPositionToOrigin() {
+  this->m_coordinate3D.setX(0);
+  this->m_coordinate3D.setY(0);
+  this->m_coordinate3D.setZ(0);
+}
+
 //------------------------------------------------------------------------ print
 // Implementation notes:
 //  Prints "B" for "bot" of "Robot"
@@ -176,10 +152,11 @@ const Coordinate3D& Robot::viewCoordinate3D() const {
 //  Moves FORWARDS circularly through DIRECTION array
 //------------------------------------------------------------------------------
 void Robot::attemptRightTurn() {
-  if (this->robotAtIntersection) {
+  if (isRobotAtIntersection()) {
     this->robotDirection = (this->robotDirection + 1) % 4;
-
     this->angleRobotBase = this->DIRECTION[this->robotDirection];
+  } else {
+    std::cout << "Robot right turn failed, not at intersection" << std::endl;
   }
 }
 
@@ -191,11 +168,26 @@ void Robot::attemptRightTurn() {
 //  Moves BACKWARDS circularly through DIRECTION array
 //------------------------------------------------------------------------------
 void Robot::attemptLeftTurn() {
-  if (this->robotAtIntersection) {
+  if (isRobotAtIntersection()) {
     this->robotDirection = (this->robotDirection + (4 - 1)) % 4;
-
     this->angleRobotBase = this->DIRECTION[this->robotDirection];
+  } else {
+    std::cout << "Robot left turn failed, not at intersection" << std::endl;
   }
+}
+
+// returns true if and only if BOTH x position mod 1 + BLOCK_SIZE is 0, and y
+// position mod 1 + BLOCK_SIZE is 0; otherwise false.
+bool Robot::isRobotAtIntersection() const {
+  int32_t x = static_cast<int32_t>(this->viewCoordinate3D().viewX());
+  int32_t y = static_cast<int32_t>(this->viewCoordinate3D().viewY());
+  return ((x % (1 + BLOCK_SIZE) == 0) && (y % (1 + BLOCK_SIZE) == 0));
+}
+
+// returns true if x position mod 1 + BLOCK_SIZE is 0, or y position mod 1 +
+// BLOCK_SIZE is 0, or both; otherwise false.
+bool Robot::isPositionOnStreet(int32_t x, int32_t y) const {
+  return ((x % (1 + BLOCK_SIZE) == 0) || (y % (1 + BLOCK_SIZE) == 0));
 }
 
 //----------------------------------------------------------- attemptMoveForward
@@ -205,13 +197,13 @@ void Robot::attemptLeftTurn() {
 // (eg. a street), if both conditions are met, the robot moves forward.
 //------------------------------------------------------------------------------
 void Robot::attemptMoveForward() {
-  int64_t i = this->robotDirection;
-  int64_t x = this->m_coordinate3D.viewX() + this->dx[i];
-  int64_t y = this->m_coordinate3D.viewY() + this->dy[i];
-  int64_t z = this->m_coordinate3D.viewZ() + this->dz[i];
+  int32_t i = this->robotDirection;
+  int32_t x = static_cast<int32_t>(this->m_coordinate3D.viewX()) + this->dx[i];
+  int32_t y = static_cast<int32_t>(this->m_coordinate3D.viewY()) + this->dy[i];
+  int32_t z = static_cast<int32_t>(this->m_coordinate3D.viewZ()) + this->dz[i];
 
   // if in boundary, update the coordinate values
-  if (positionIsWithinBounds(x, y, z)) {
+  if (isPositionInBounds(x, y) && isPositionOnStreet(x, y)) {
     this->m_coordinate3D.setX(static_cast<int64_t>(x));
     this->m_coordinate3D.setY(static_cast<int64_t>(y));
     this->m_coordinate3D.setZ(static_cast<int64_t>(z));
@@ -222,20 +214,9 @@ void Robot::turnHeadRight() { this->angleRobotHead = -45; }
 void Robot::turnHeadLeft() { this->angleRobotHead = 45; }
 void Robot::turnHeadForward() { this->angleRobotHead = 0; }
 
-//------------------------------------------------------- positionIsWithinBounds
-// Implementation notes:
-//  Return false if the coordinates given are "out of boundary", which implies
-//  the move should not be allowed
-//------------------------------------------------------------------------------
-bool Robot::positionIsWithinBounds(const int64_t& x, const int64_t& y,
-                                   const int64_t& z) {
-  if (x < 0 || x >= static_cast<int64_t>(GRID_DIMENSIONS) || y < 0 ||
-      y >= static_cast<int64_t>(GRID_DIMENSIONS) || z < 0 ||
-      z >= static_cast<int64_t>(GRID_DIMENSIONS)) {
-    return false;
-  } else {
-    return true;
-  }
+bool Robot::isPositionInBounds(int32_t x, int32_t y) const {
+  int32_t dim = static_cast<int32_t>(GRID_DIMENSIONS);
+  return (x >= 0 && x < dim && y >= 0 && y < dim);
 }
 
 //--------------------------------------------------------------------- drawBase
@@ -259,6 +240,8 @@ void Robot::drawBase() {
                         static_cast<float>(this->base[3][2] * 1.001)}};
 
   // 6 cube faces
+  glPushMatrix();
+  // glPushName(2);
   glBegin(GL_QUADS);
 
   // yellow - back of the robot
@@ -269,8 +252,11 @@ void Robot::drawBase() {
   glVertex3fv(this->base[3]);
 
   glEnd();
+  // glPopName();
+  glPopMatrix();
 
   // red - inner triangles on the robot
+
   glBegin(GL_TRIANGLES);
 
   // bottom triangle

@@ -31,7 +31,6 @@
 
 // DEBUG AND PROTOTYPING
 #include "debug.h"
-#include "sampleShape.h"
 
 // global variables -- config file
 #include "config.h"
@@ -40,10 +39,10 @@ int32_t WINDOW_ID;
 int32_t WINDOW_WIDTH = 1024;
 int32_t WINDOW_HEIGHT = 600;
 int32_t WIREFRAME_MODE = 1;
+int32_t GAME_PAUSED = 0;
 
 Object* objectGrid[GRID_DIMENSIONS][GRID_DIMENSIONS];
 
-/*SampleShape myshape(Coordinate3D(0, 0, 0));*/
 Debug mydebug;
 Robot theRobot(Coordinate3D(0, 0, 0));
 std::vector<Object*> objectsInRange;
@@ -81,8 +80,15 @@ void printObjectsInRangeToConsole();
 void setViewLookAt();
 
 // DEBUG====================
-void timer(int value);
+/*void timer(int value);*/
 // DEBUG====================
+
+static void (*pick)(GLint name) = NULL;
+static void (*selection)(void) = NULL;
+
+static void mousePick(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY);
+void selectionFunc(void (*f)(void));
+void pickFunc(void (*f)(GLint name));
 
 // Entry point
 int main(int32_t argc, char** argv) {
@@ -118,17 +124,32 @@ int main(int32_t argc, char** argv) {
   // glutTimerFunc(0, &timer, 0);
   // DEBUG====================
 
+  // picking objects with mouse click
+  selectionFunc(renderSceneCallback);
+  pickFunc(pick);
+
   // OpenGl takes control
   glutMainLoop();
 }
 
 // DEBUG====================
-void timer(int value) {
+/*void timer(int value) {
   int millisecondRefresh = 100;
   glutPostRedisplay();
   glutTimerFunc(millisecondRefresh, &timer, 0);
-}
+}*/
 // DEBUG====================
+
+void togglePause() {
+  GAME_PAUSED = 1 - GAME_PAUSED;
+  if (GAME_PAUSED) {
+    renderSceneCallback();  // do one call so we get the "paused" message
+                            // displayed
+    glutIdleFunc(NULL);
+  } else {
+    glutIdleFunc(&renderSceneCallback);
+  }
+}
 
 //------------------------------------------------------------------------- init
 // Implementation notes:
@@ -151,8 +172,10 @@ void init(int32_t width, int32_t height) {
   populateInRangeVector();
 
   // set our offsets for the camera eye position
-  offX = 5.0;
-  offY = 5.0;
+  // This is the "default" camera view, Which is reset to these values when
+  // special key F4 is hit.
+  offX = 0.0;
+  offY = -5.0;
   offZ = 5.0;
 
   // set coordinates of eye position and what we are looking at (i.e. the robot)
@@ -210,40 +233,52 @@ void renderSceneCallback() {
   glLoadIdentity();
 
   // Draw all objects in range
-  for (Object* inRangeObject : objectsInRange) {
-    inRangeObject->draw();
+  // We want to assign a 'name' or GLint id value to each object that can be
+  // clicked on.  The robot's name will be predetermined (Apr 9, currently set
+  // to 1), and the naming of each object will start from some offset plus its
+  // index.  This allows us to iterate through later and find the object to
+  // delete based on offset and index in the container.
+  int nameIDOffset = 2;
+  glPushMatrix();
+  for (uint i = 0; i < objectsInRange.size(); i++) {
+    glPushName(nameIDOffset + i);
+    objectsInRange[i]->draw();
+    glPopName();
   }
+  glPopMatrix();
 
-  // Test begin
-  gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 1.0, 0.0);
-  // glTranslatef(0.0f, 0.0f, -10.0f);
+  // Set our camera look position and direction.
+  // ***NOTE*** Z is "up"
+  gluLookAt(eX, eY, eZ, atX, atY, atZ, 0.0, 0.0, 1.0);
 
-  // Draw the robot
-
-  // wireframe to see the rotations better
+  // wireframe to see the rotations better. For debugging only (remove later).
   if (WIREFRAME_MODE) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   } else {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
+  // DRAW ROBOT
+  // We assign a 'name', for clicking events, to the Robot.  This is arbitrary,
+  // but needs to be unique to the robot (we will choose the value to be 1).
+  glPushMatrix();
+  glPushName(1);
   theRobot.draw();
-  // myshape.draw();
-  // glutSolidSphere(1, 20, 20);
+  glPopName();
+  glPopMatrix();
 
-  // length of each axis to draw
+  // length of each axis to draw.  For debugging only (remove later).
+  // X - red
+  // Y - green
+  // Z - blue
   double len = 2.0;
-
   glBegin(GL_LINES);
-
   glColor3f(1, 0, 0);
   glVertex3d(0, 0, 0);
   glVertex3d(len, 0, 0);
-
   glColor3f(0, 1, 0);
   glVertex3d(0, 0, 0);
   glVertex3d(0, len, 0);
-
   glColor3f(0, 0, 1);
   glVertex3d(0, 0, 0);
   glVertex3d(0, 0, len);
@@ -252,10 +287,12 @@ void renderSceneCallback() {
   int32_t x = theRobot.viewCoordinate3D().viewX();
   int32_t y = theRobot.viewCoordinate3D().viewY();
   int32_t z = theRobot.viewCoordinate3D().viewZ();
-  // mydebug.draw();
+  mydebug.draw();
   mydebug.draw(30, WINDOW_HEIGHT - 80, "Robot Coordinate3D, (%i, %i, %i)", x, y,
                z);
-  // Test end
+  if (GAME_PAUSED) {
+    mydebug.draw(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, "PAUSED");
+  }
 
   glutSwapBuffers();
 }
@@ -273,16 +310,11 @@ void resizeSceneCallback(int32_t width, int32_t height) {
   } else {
     // Do nothing
   }
-
   glViewport(0, 0, width, height);
-
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-
   gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
-
   glMatrixMode(GL_MODELVIEW);
-
   WINDOW_WIDTH = width;
   WINDOW_HEIGHT = height;
 }
@@ -306,24 +338,40 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
     case 'd': {
       // at an intersection of the streets, turn the robot to the
       // right; if not at intersection, do nothing
-      theRobot.attemptRightTurn();
+      if (!GAME_PAUSED) theRobot.attemptRightTurn();
       break;
     }
     case 'a': {
       // at an intersection of the streets, turn the robot to left;
       // if not at intersection, do nothing
-      theRobot.attemptLeftTurn();
+      if (!GAME_PAUSED) theRobot.attemptLeftTurn();
       break;
     }
     case 'w': {
       // push the robot forward
-      theRobot.attemptMoveForward();
+      if (!GAME_PAUSED) theRobot.attemptMoveForward();
+      setViewLookAt();
+      break;
+    }
+    case 'p': {
+      // pause the game.  Use a toggle
+      togglePause();
+      break;
+    }
+    case 'r': {
+      // reset robot position to origin (0, 0)
+      if (!GAME_PAUSED) theRobot.resetPositionToOrigin();
       setViewLookAt();
       break;
     }
     // DEBUG============WIREFRAME MODE TOGGLE
     case 'm': {
       WIREFRAME_MODE = 1 - WIREFRAME_MODE;
+      break;
+    }
+    case 27: {
+      glutDestroyWindow(WINDOW_ID);
+      exit(1);
       break;
     }
     default: {
@@ -340,6 +388,7 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
 //  game.
 //------------------------------------------------------------------------------
 void specialKeysCallback(int32_t key, int32_t x, int32_t y) {
+  if (GAME_PAUSED) return;
   switch (key) {
     case GLUT_KEY_F1: {
       theRobot.turnHeadForward();
@@ -354,18 +403,38 @@ void specialKeysCallback(int32_t key, int32_t x, int32_t y) {
       break;
     }
     case GLUT_KEY_F4: {
+      offX = 0;
+      offY = -5;
+      offZ = 5;
+      setViewLookAt();
       break;
     }
     case GLUT_KEY_F5: {
+      offX = -5;
+      offY = -5;
+      offZ = 5;
+      setViewLookAt();
       break;
     }
     case GLUT_KEY_F6: {
+      offX = 5;
+      offY = -5;
+      offZ = 5;
+      setViewLookAt();
       break;
     }
     case GLUT_KEY_F7: {
+      offX = 5;
+      offY = 5;
+      offZ = 5;
+      setViewLookAt();
       break;
     }
     case GLUT_KEY_F8: {
+      offX = -5;
+      offY = 5;
+      offZ = 5;
+      setViewLookAt();
       break;
     }
     default: {
@@ -376,6 +445,7 @@ void specialKeysCallback(int32_t key, int32_t x, int32_t y) {
 }
 
 void specialKeysUpCallback(int32_t key, int32_t x, int32_t y) {
+  if (GAME_PAUSED) return;
   switch (key) {
     case GLUT_KEY_F1: {
       theRobot.turnHeadForward();
@@ -417,10 +487,12 @@ void specialKeysUpCallback(int32_t key, int32_t x, int32_t y) {
 //  used to process user inputs and apply changes to the state of the game.
 //------------------------------------------------------------------------------
 void mouseCallback(int32_t button, int32_t state, int32_t x, int32_t y) {
+  if (GAME_PAUSED) return;
   switch (button) {
     case GLUT_LEFT_BUTTON: {
       switch (state) {
         case GLUT_DOWN: {
+          mousePick(x, glutGet(GLUT_WINDOW_HEIGHT) - 1 - y, 3, 3);
           break;
         }
         case GLUT_UP: {
@@ -436,6 +508,83 @@ void mouseCallback(int32_t button, int32_t state, int32_t x, int32_t y) {
       break;
     }
   }
+}
+
+void selectionFunc(void (*f)(void)) { selection = f; }
+void pickFunc(void (*f)(GLint name)) { pick = f; }
+
+static void mousePick(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY) {
+  std::cout << "in mousePick with x y: " << x << ", " << y << std::endl;
+  GLuint buffer[1024];
+  const int bufferSize = sizeof(buffer) / sizeof(GLuint);
+
+  GLint viewport[4];
+  GLdouble projection[16];
+
+  GLint hits;
+  GLint i, j, k;
+
+  GLint min = -1;
+  GLuint minZ = -1;
+
+  glSelectBuffer(bufferSize, buffer); /* Selection buffer for hit records */
+  glRenderMode(GL_SELECT);            /* OpenGL selection mode            */
+  glInitNames();                      /* Clear OpenGL name stack          */
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();                       /* Push current projection matrix   */
+  glGetIntegerv(GL_VIEWPORT, viewport); /* Get the current viewport size    */
+  glGetDoublev(GL_PROJECTION_MATRIX,
+               projection); /* Get the projection matrix        */
+  glLoadIdentity();         /* Reset the projection matrix      */
+  gluPickMatrix(x, y, delX, delY, viewport); /* Set the picking matrix */
+  glMultMatrixd(projection); /* Apply projection matrix          */
+
+  glMatrixMode(GL_MODELVIEW);
+
+  if (selection) selection(); /* Draw the scene in selection mode */
+
+  hits = glRenderMode(GL_RENDER); /* Return to normal rendering mode  */
+
+  // debug
+  if (hits != 0) {
+    printf("hits = %d\n", hits);
+
+    for (i = 0, j = 0; i < hits; i++) {
+      printf("\tsize = %u, min = %u, max = %u : ", buffer[j], buffer[j + 1],
+             buffer[j + 2]);
+      for (k = 0; k < (GLint)buffer[j]; k++) printf("%u ", buffer[j + 3 + k]);
+      printf("\n");
+
+      j += 3 + buffer[j];
+    }
+  }
+
+  /* Determine the nearest hit */
+
+  if (hits) {
+    for (i = 0, j = 0; i < hits; i++) {
+      if (buffer[j + 1] < minZ) {
+        /* If name stack is empty, return -1                */
+        /* If name stack is not empty, return top-most name */
+
+        if (buffer[j] == 0)
+          min = -1;
+        else
+          min = buffer[j + 2 + buffer[j]];
+
+        minZ = buffer[j + 1];
+      }
+
+      j += buffer[j] + 3;
+    }
+  }
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix(); /* Restore projection matrix           */
+  glMatrixMode(GL_MODELVIEW);
+
+  if (pick) pick(min); /* Pass pick event back to application */
 }
 
 //----------------------------------------------------------------- populateGrid

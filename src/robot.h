@@ -3,7 +3,6 @@
 
 #include "cylinder.h"
 #include "object.h"
-/*#include "sampleShape.h"*/
 
 #include <GL/gl.h>    // OpenGL itself. Linux
 #include <GL/glu.h>   // GLU support library. Linux
@@ -97,29 +96,21 @@ class Robot : public Object {
   //--------------------------------------------------------------------------
   void attemptMoveForward();
 
+  // move robot to 0, 0
+  void resetPositionToOrigin();
+
   // Cody Barnson, Apr 8, 2017
   void turnHeadRight();
   void turnHeadLeft();
   void turnHeadForward();
 
  private:
-  //--------------------------------------------------- positionIsWithinBounds
-  // Brief Description
-  //  Returns true if the input x, y, z parameters fall within the boundaries
-  //  of the grid/city, and false otherwise
-  //
-  // Method:    positionIsWithinBounds
-  // FullName:  Robot::positionIsWithinBounds
-  // Access:    public
-  // Returns:   bool
-  // Parameter: const int64_t& x
-  // Parameter: const int64_t& x
-  // Parameter: const int64_t& z
-  //--------------------------------------------------------------------------
-  static bool positionIsWithinBounds(const int64_t& x, const int64_t& y,
-                                     const int64_t& z);
+  bool isPositionInBounds(int32_t x, int32_t y) const;
+  bool isPositionOnStreet(int32_t x, int32_t y) const;
+  bool isRobotAtIntersection() const;
 
-  //----------------------------------------------------------------- drawBase
+  //-----------------------------------------------------------------
+  // drawBase
   // Brief Description
   //  Helper function of draw which draws the base of the robot.
   //
@@ -149,10 +140,6 @@ class Robot : public Object {
   // an index, the refers to position in DIRECTION
   // to infer the rotation direction of base robot
   uint32_t robotDirection = 0;
-
-  /* const int32_t dx[4] = {0, 1, 0, -1};
-   const int32_t dy[4] = {0, 0, 0, 0};
-   const int32_t dz[4] = {-1, 0, 1, 0};*/
 
   // N E S W === updated for "Z is up".
   const int32_t dx[4] = {0, 1, 0, -1};

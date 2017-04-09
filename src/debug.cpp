@@ -47,7 +47,7 @@ void Debug::draw(int32_t x, int32_t y, const char* format, ...) {
   glLoadIdentity();
 
   // output some standard information
-  drawDefault();
+  // drawDefault();
 
   glColor3f(1, 1, 1);
   glRasterPos2i(x, y);
