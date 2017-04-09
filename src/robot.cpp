@@ -20,6 +20,15 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
   originHead[2] = static_cast<float>(origin[2] + baseHeight);
 
   // initialize the vertices of the base of the robot
+  // .5, 1.5, .5
+  // -.5, 1.5, .5
+  // -.5, 0, .5
+  // .5, 0, .5
+  // .5, 1.5, -.5
+  // -.5, 1.5, -.5
+  // -.5, 0, -.5
+  // .5, 0, -.5
+
   GLfloat bb[8][3] = {{baseWidth, origin[1] + baseHeight, baseWidth},
                       {-baseWidth, origin[1] + baseHeight, baseWidth},
                       {-baseWidth, origin[1], baseWidth},
@@ -28,6 +37,17 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
                       {-baseWidth, origin[1] + baseHeight, -baseWidth},
                       {-baseWidth, origin[1], -baseWidth},
                       {baseWidth, origin[1], -baseWidth}};
+
+  // initialize the vertices of the base of the robot
+  /*GLfloat bb[8][3] = {
+      {baseWidth, baseWidth, origin[2]},  // first 4 are bottom
+      {-baseWidth, baseWidth, origin[2]},
+      {-baseWidth, -baseWidth, origin[2]},
+      {baseWidth, -baseWidth, origin[2]},
+      {baseWidth, baseWidth, origin[2] + baseHeight},  // last 4 are top
+      {-baseWidth, baseWidth, origin[2] + baseHeight},
+      {-baseWidth, -baseWidth, origin[2] + baseHeight},
+      {baseWidth, -baseWidth, origin[2] + baseHeight}};*/
 
   // initialize the vertices of the head of the robot
   GLfloat hh[8][3] = {{headWidth, originHead[1] + headHeight, headWidth},
@@ -38,6 +58,17 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
                       {-headWidth, originHead[1] + headHeight, -headWidth},
                       {-headWidth, originHead[1], -headWidth},
                       {headWidth, originHead[1], -headWidth}};
+
+  // initialize the vertices of the head of the robot
+  /*GLfloat hh[8][3] = {
+      {headWidth, headWidth, originHead[2]},  // first 4 are bottom
+      {-headWidth, headWidth, originHead[2]},
+      {-headWidth, -headWidth, originHead[2]},
+      {headWidth, -headWidth, originHead[2]},
+      {headWidth, headWidth, originHead[2] + headHeight},  // Last 4 are top
+      {-headWidth, headWidth, originHead[2] + headHeight},
+      {-headWidth, -headWidth, originHead[2] + headHeight},
+      {headWidth, -headWidth, originHead[2] + headHeight}};*/
 
   // write values into our member variables
   for (uint64_t i = 0; i < 8; i++) {
@@ -72,13 +103,26 @@ void Robot::draw() {
   glTranslatef(static_cast<float>(this->m_coordinate3D.viewX()),
                static_cast<float>(this->m_coordinate3D.viewY()),
                static_cast<float>(this->m_coordinate3D.viewZ()));
-  glRotatef(static_cast<float>(this->angleRobotBase), 0, 1, 0);
+  // old rotate for "Y is up"
+  // glRotatef(static_cast<float>(this->angleRobotBase), 0, 1, 0);
+
+  // update for "Z is up"
+  glRotatef(static_cast<float>(this->angleRobotBase), 0, 0, 1);
+  glRotatef(90, 1, 0, 0);
 
   // draw robot head and rotate based on parameters set by key presses
   glPushMatrix();
   glTranslatef(0, 0.13, 0);  // move up for neck piece
   glRotatef(static_cast<float>(this->angleRobotHead), 0, 1, 0);
   this->drawHead();
+
+  /*glPushMatrix();
+  glTranslatef(0, .5 - .13, 0);
+  glScalef(.6, .6, .6);
+  m_body.draw();
+  glPopMatrix();*/
+
+  // m_body.draw();
 
   // draw neck piece
   glPushMatrix();

@@ -3,6 +3,7 @@
 
 #include "cylinder.h"
 #include "object.h"
+/*#include "sampleShape.h"*/
 
 #include <GL/gl.h>    // OpenGL itself. Linux
 #include <GL/glu.h>   // GLU support library. Linux
@@ -149,9 +150,14 @@ class Robot : public Object {
   // to infer the rotation direction of base robot
   uint32_t robotDirection = 0;
 
+  /* const int32_t dx[4] = {0, 1, 0, -1};
+   const int32_t dy[4] = {0, 0, 0, 0};
+   const int32_t dz[4] = {-1, 0, 1, 0};*/
+
+  // N E S W === updated for "Z is up".
   const int32_t dx[4] = {0, 1, 0, -1};
-  const int32_t dy[4] = {0, 0, 0, 0};
-  const int32_t dz[4] = {-1, 0, 1, 0};
+  const int32_t dy[4] = {1, 0, -1, 0};
+  const int32_t dz[4] = {0, 0, 0, 0};
 
   int32_t angleRobotBase = 0;
   int32_t angleRobotHead = 0;
@@ -175,6 +181,8 @@ class Robot : public Object {
   Cylinder m_eyeLeft = Cylinder(Coordinate3D(0, 0, 0));
   Cylinder m_eyeRight = Cylinder(Coordinate3D(0, 0, 0));
   Cylinder m_neck = Cylinder(Coordinate3D(0, 0, 0));
+
+  // SampleShape m_body = SampleShape(Coordinate3D(0, 0, 0));
 };
 
 #endif

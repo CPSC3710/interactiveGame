@@ -115,7 +115,7 @@ int main(int32_t argc, char** argv) {
 
   // DEBUG====================
   // timer function
-  glutTimerFunc(0, &timer, 0);
+  // glutTimerFunc(0, &timer, 0);
   // DEBUG====================
 
   // OpenGl takes control
@@ -151,9 +151,9 @@ void init(int32_t width, int32_t height) {
   populateInRangeVector();
 
   // set our offsets for the camera eye position
-  offX = -5.0;
+  offX = 5.0;
   offY = 5.0;
-  offZ = -3.0;
+  offZ = 5.0;
 
   // set coordinates of eye position and what we are looking at (i.e. the robot)
   setViewLookAt();
