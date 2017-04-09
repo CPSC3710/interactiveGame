@@ -92,9 +92,9 @@ class Robot : public Object {
   // Method:    attemptMoveForward
   // FullName:  Robot::attemptMoveForward
   // Access:    public
-  // Returns:   void
+  // Returns:   bool
   //--------------------------------------------------------------------------
-  void attemptMoveForward();
+  bool attemptMoveForward();
 
   // move robot to 0, 0
   void resetPositionToOrigin();

@@ -196,7 +196,7 @@ bool Robot::isPositionOnStreet(int32_t x, int32_t y) const {
 //  within the boundaries, and the grid position in front of it must be valid
 // (eg. a street), if both conditions are met, the robot moves forward.
 //------------------------------------------------------------------------------
-void Robot::attemptMoveForward() {
+bool Robot::attemptMoveForward() {
   int32_t i = this->robotDirection;
   int32_t x = static_cast<int32_t>(this->m_coordinate3D.viewX()) + this->dx[i];
   int32_t y = static_cast<int32_t>(this->m_coordinate3D.viewY()) + this->dy[i];
@@ -207,6 +207,12 @@ void Robot::attemptMoveForward() {
     this->m_coordinate3D.setX(static_cast<int64_t>(x));
     this->m_coordinate3D.setY(static_cast<int64_t>(y));
     this->m_coordinate3D.setZ(static_cast<int64_t>(z));
+
+	return true;
+  }
+  else
+  {
+	  return false;
   }
 }
 
