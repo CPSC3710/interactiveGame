@@ -1,6 +1,20 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// linux
+#ifdef __linux__
+
+#include <GL/gl.h>    // OpenGL itself. Linux
+#include <GL/glu.h>   // GLU support library. Linux
+#include <GL/glut.h>  // GLUT support library. Linux
+
+// windows
+#else
+
+#include <GL\glut.h> // Windows version
+
+#endif
+
 #include <cstdint>
 
 // Global Variables
@@ -14,5 +28,19 @@ const uint64_t VISUAL_RANGE = 10;
 // deemed invalid locations and boundary checks shall be done to prevent such
 // moves
 const uint64_t GRID_DIMENSIONS = (NUM_BLOCKS * (BLOCK_SIZE + 1)) + 1;
+
+// the change in angle, about the robots head's as the axis of rotation, for
+// which the antenna will turn each update while the game is not paused.
+// Positive values will yield a clockwise rotation, negative a counter clockwise
+// rotation.
+const float ROBOT_ANTENNA_ROTATE_DELTA = 0.3;
+
+extern int32_t WINDOW_ID;
+extern int32_t WINDOW_WIDTH;
+extern int32_t WINDOW_HEIGHT;
+
+/* Picking API */
+extern void selectionFunc(void (*f)(void));  /* Selection-mode draw function */
+extern void pickFunc(void (*f)(GLint name)); /* Pick event handling function */
 
 #endif
