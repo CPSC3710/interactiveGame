@@ -15,4 +15,8 @@ const uint64_t VISUAL_RANGE = 10;
 // moves
 const uint64_t GRID_DIMENSIONS = (NUM_BLOCKS * (BLOCK_SIZE + 1)) + 1;
 
+extern int32_t WINDOW_ID;
+extern int32_t WINDOW_WIDTH;
+extern int32_t WINDOW_HEIGHT;
+
 #endif

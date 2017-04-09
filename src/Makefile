@@ -1,14 +1,32 @@
 CXX = g++11
+# CXX = g++
 CXXFLAGS = -std=c++11 -Wall -I /usr/include/
 LIBDIR = /usr/lib/
+# LNFLAGS = -lX11 -lXi -lglut -lGL -lGLU -lm
 LNFLAGS = -lX11 -lXi -lXmu -lglut -lGL -lGLU -lm
-OBJECTS = object.o robot.o street.o cylinder.o rectangularPrism.o triangularPrism.o coordinate3d.o
+#OBJECTS = object.o robot.o street.o cylinder.o rectangularPrism.o triangularPrism.o coordinate3d.o
 
-game : main.o $(OBJECTS)
-	$(CXX) -L $(LIBDIR) -o $@ $^ $(LNFLAGS) 
+EXEC = game
+SOURCES = $(wildcard *.cpp)
+HEADERS = $(wildcard *.h)
+OBJECTS = $(SOURCES:.cpp=.o)
 
-clean :
-	rm -f *.o *~ *% *# .#*
+# main target
+all: $(OBJECTS)
+	$(CXX) -L $(LIBDIR) $(OBJECTS) $(CXXFLAGS) $(LNFLAGS) -o $(EXEC) $(HEADERS)
 
-clean-all : clean
-	rm -f game 
+-include $(OBJECTS:.o:.d)
+
+# obtain object files
+%.o: %.cc
+	$(CXX) -c $(CXXFLAGS) $< -o $@
+	$(CXX) -M $(CXXFLAGS) $*.cc > $*.d
+
+# note: automatic variables
+# $< contains the first dependency file name
+# $@ contains the target file name
+
+.PHONY: clean
+# clean out the directory but keep the executables with command clean
+clean: 
+	rm -f $(EXEC) *~ *% *# .#* *.o *.d
