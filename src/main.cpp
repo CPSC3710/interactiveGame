@@ -349,7 +349,14 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y) {
     }
     case 'w': {
       // push the robot forward
-      if (!GAME_PAUSED) theRobot.attemptMoveForward();
+		if(!GAME_PAUSED)
+		{
+			if(theRobot.attemptMoveForward())
+			{
+				populateInRangeVector();
+			}
+		}
+
       setViewLookAt();
       break;
     }
