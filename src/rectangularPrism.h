@@ -23,7 +23,7 @@ public:
 
 	//-------------------------------------------------------------- constructor
 	// Brief Description
-	//  Constructor for a Rectangular Prism
+	//  Constructor for a Triangular Prism
 	//
 	// Method:    RectangularPrism
 	// FullName:  RectangularPrism::RectangularPrism
@@ -36,7 +36,7 @@ public:
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description
-	//  Draws the Rectangular Prism to the screen at its X Y Z coordinates.
+	//  Draws the Triangular Prism to the screen at its X Y Z coordinates.
 	//
 	// Method:    draw
 	// FullName:  RectangularPrism::draw
@@ -47,7 +47,7 @@ public:
 
 	//-------------------------------------------------------------------- print
 	// Brief Description
-	//  Prints "R" (Representing "RectangularPrism") to the console, which
+	//  Prints "T" (Representing "RectangularPrism") to the console, which 
 	//  can be used for debugging purposes.
 	//
 	// Method:    print
@@ -68,10 +68,9 @@ public:
 	//--------------------------------------------------------------------------
    const Coordinate3D& viewCoordinate3D() const;
 
-   bool isDestroyable() const override;
+    bool isDestroyable() const override;
 
 private:
-
+   GLUquadric* m_quad;
 };
-
 #endif

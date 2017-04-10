@@ -71,6 +71,6 @@ public:
     bool isDestroyable() const override;
 
 private:
-
+   GLUquadric* m_quad;
 };
 #endif

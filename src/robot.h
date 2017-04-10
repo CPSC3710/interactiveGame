@@ -177,7 +177,10 @@ class Robot : public Object {
   Cylinder m_antenna = Cylinder(Coordinate3D(0, 0, 0));
   Cylinder m_eyeLeft = Cylinder(Coordinate3D(0, 0, 0));
   Cylinder m_eyeRight = Cylinder(Coordinate3D(0, 0, 0));
-  Cylinder m_neck = Cylinder(Coordinate3D(0, 0, 0));
+   Cylinder m_neck = Cylinder(Coordinate3D(0, 0, 0));
+
+   float m_antenna_angle = 0.0;
+   
 
   // SampleShape m_body = SampleShape(Coordinate3D(0, 0, 0));
 };

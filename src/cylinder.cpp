@@ -127,7 +127,7 @@ void Cylinder::drawModified() {
 
   // draw the wrapping rect for the cylinder
   glPushMatrix();
-  glColor3f(1, 0, 0);
+  glColor3f(.5, .5, .5);
   gluQuadricTexture(this->m_quad, 1);
   gluCylinder(this->m_quad, 1, 1, 1, 16, 10);
   glPopMatrix();

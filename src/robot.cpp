@@ -60,8 +60,9 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
   m_antenna.setPersistent();
   m_antenna.setScale(0.1, 0.4, 0.1);
   m_antenna.setRotate(-90, 1, 0, 0);
-  m_antenna.setRotateDelta(0, 0, 0, 1, ROBOT_ANTENNA_ROTATE_DELTA);
-
+  // m_antenna.setRotateDelta(0, 0, 0, 1, 0);
+  m_antenna.setRotateDelta(this->m_antenna_angle, 0, 0, 1, 0);
+  
   // configure eyes
   m_eyeLeft.setPersistent();
   m_eyeLeft.setScale(0.07, 0.07, 0.07);
@@ -100,21 +101,20 @@ void Robot::draw() {
 
   // draw neck piece
   glPushMatrix();
-  // glPushName(3);
   glTranslatef(0, 1.3, 0);
   m_neck.drawModified();
-  // glPopName();
   glPopMatrix();
 
   // draw antenna
   glPushMatrix();
   glTranslatef(0, 1.9, 0);
+  m_antenna.setRotateDelta(this->m_antenna_angle, 0, 0, 1, 0);
   m_antenna.drawModified();
   glPopMatrix();
 
   // draw eyes
   glPushMatrix();
-  glTranslatef(0, 1.75, -0.35);  // shifting reference frame to eye position
+  glTranslatef(0, 1.75, -0.25);  // shifting reference frame to eye position
   glPushMatrix();
   glTranslatef(-0.1, 0, 0);  // shift left eye to left
   m_eyeLeft.drawModified();
@@ -214,7 +214,9 @@ bool Robot::attemptMoveForward() {
     this->m_coordinate3D.setY(static_cast<int64_t>(y));
     this->m_coordinate3D.setZ(static_cast<int64_t>(z));
 
-	return true;
+    m_antenna_angle -= ROBOT_ANTENNA_ROTATE_DELTA;
+    return true;
+    
   }
   else
   {
@@ -239,17 +241,17 @@ bool Robot::isPositionInBounds(int32_t x, int32_t y) const {
 //  on the back
 //------------------------------------------------------------------------------
 void Robot::drawBase() {
-  float front = 0.7;
+  float front = 0.8;
   float fact = 0.6;
   float offy = 0.2;
 
   // for triangles to be drawn on back of robot
   GLfloat tri[3][3] = {{this->base[2][0] * fact, this->base[2][1] + offy,
-                        static_cast<float>(this->base[2][2] * 1.001)},
+                        static_cast<float>(this->base[2][2] * 1.01)},
                        {this->base[3][0] * fact, this->base[3][1] + offy,
-                        static_cast<float>(this->base[3][2] * 1.001)},
-                       {0.0, static_cast<float>(this->base[1][1] * 0.25),
-                        static_cast<float>(this->base[3][2] * 1.001)}};
+                        static_cast<float>(this->base[3][2] * 1.01)},
+                       {0.0, static_cast<float>(this->base[1][1] * 0.4),
+                        static_cast<float>(this->base[3][2] * 1.01)}};
 
   // 6 cube faces
   glPushMatrix();
@@ -297,13 +299,13 @@ void Robot::drawBase() {
   // green - inner rect on front
   glColor3f(0.0, 1.0, 0.0);
   glVertex3f(this->base[5][0] * front, this->base[5][1] * front,
-             this->base[5][2] * 1.001);
+             this->base[5][2] * 1.01);
   glVertex3f(this->base[4][0] * front, this->base[4][1] * front,
-             this->base[4][2] * 1.001);
-  glVertex3f(this->base[7][0] * front, this->base[7][1] * front,
-             this->base[7][2] * 1.001);
-  glVertex3f(this->base[6][0] * front, this->base[6][1] * front,
-             this->base[6][2] * 1.001);
+             this->base[4][2] * 1.01);
+  glVertex3f(this->base[7][0] * front, this->base[7][1] + 0.1,
+             this->base[7][2] * 1.01);
+  glVertex3f(this->base[6][0] * front, this->base[6][1] + 0.1,
+             this->base[6][2] * 1.01);
 
   // green
   glColor3f(0.0, 1.0, 0.0);

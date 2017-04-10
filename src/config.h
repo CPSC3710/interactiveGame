@@ -33,7 +33,7 @@ const uint64_t GRID_DIMENSIONS = (NUM_BLOCKS * (BLOCK_SIZE + 1)) + 1;
 // which the antenna will turn each update while the game is not paused.
 // Positive values will yield a clockwise rotation, negative a counter clockwise
 // rotation.
-const float ROBOT_ANTENNA_ROTATE_DELTA = 0.3;
+const float ROBOT_ANTENNA_ROTATE_DELTA = 30.0;
 
 extern int32_t WINDOW_ID;
 extern int32_t WINDOW_WIDTH;
