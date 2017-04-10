@@ -40,7 +40,7 @@ extern int32_t WINDOW_WIDTH;
 extern int32_t WINDOW_HEIGHT;
 
 /* Picking API */
-extern void selectionFunc(void (*f)(void));  /* Selection-mode draw function */
-extern void pickFunc(void (*f)(GLint name)); /* Pick event handling function */
+extern void selectionFunc(void(*f)(void));  /* Selection-mode draw function */
+extern void pickFunc(void(*f)(GLint name)); /* Pick event handling function */
 
 #endif

@@ -19,8 +19,8 @@ public:
 	// Parameter: const int64_t& z
 	//--------------------------------------------------------------------------
 	Coordinate3D(
-		const int64_t& x, 
-		const int64_t& y, 
+		const int64_t& x,
+		const int64_t& y,
 		const int64_t& z);
 
 	//--------------------------------------------------------------------- setX
