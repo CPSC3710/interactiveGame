@@ -18,7 +18,10 @@ public:
 	// Parameter: const Coordinate3D& coordinate
 	//--------------------------------------------------------------------------
 	Object(
-		const Coordinate3D& coordinate);
+	   const Coordinate3D& coordinate);
+
+   virtual ~Object() { }
+   
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description

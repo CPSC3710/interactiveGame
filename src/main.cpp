@@ -43,6 +43,10 @@
 // global variables -- config file
 #include "config.h"
 
+
+// Object* cc = nullptr;
+// bool flag = false;
+
 int32_t WINDOW_ID;
 int32_t WINDOW_WIDTH = 1024;
 int32_t WINDOW_HEIGHT = 600;
@@ -236,34 +240,19 @@ eZ = 5;*/
 //  Essentially the draw function, a call to this represents a frame that will
 //  be displayed to the screen.
 //------------------------------------------------------------------------------
-Cylinder *cc = nullptr;
+
 
 void renderSceneCallback() {
 
-   if (!cc) {
-      cc = new Cylinder(Coordinate3D(0, 0, 0));
-      cc->setScale(1, 2, 1);
-   }
+   // if (!cc) {
+   //    cc = new Cylinder(Coordinate3D(0, 0, 0));
+   //    cc->setScale(1, 2, 1);
+   // }
    
   // Clear the color and depth buffers.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
-  // Draw all objects in range
-  // We want to assign a 'name' or GLint id value to each object that can be
-  // clicked on.  The robot's name will be predetermined (Apr 9, currently set
-  // to 1), and the naming of each object will start from some offset plus its
-  // index.  This allows us to iterate through later and find the object to
-  // delete based on offset and index in the container.
-  int nameIDOffset = 2;
-  glPushMatrix();
-  for (uint i = 0; i < objectsInRange.size(); i++) {
-    glPushName(nameIDOffset + i);
-    objectsInRange[i]->draw();
-    glPopName();
-  }
-  glPopMatrix();
 
   // Set our camera look position and direction.
   // ***NOTE*** Z is "up"
@@ -276,6 +265,25 @@ void renderSceneCallback() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
+  // Draw all objects in range
+  // We want to assign a 'name' or GLint id value to each object that can be
+  // clicked on.  The robot's name will be predetermined (Apr 9, currently set
+  // to 1), and the naming of each object will start from some offset plus its
+  // index.  This allows us to iterate through later and find the object to
+  // delete based on offset and index in the container.
+  int nameIDOffset = 2;
+  glPushMatrix();
+  glTranslatef(-0.5, -0.5, 0.0);
+  for (uint i = 0; i < objectsInRange.size(); i++) {
+     glPushName(nameIDOffset + i);
+     // std::cout << "drawing objectsInRange[" << i << "]\n";
+    objectsInRange[i]->draw();
+    glPopName();
+  }
+  glPopMatrix();
+
+  
+
   // DRAW ROBOT
   // We assign a 'name', for clicking events, to the Robot.  This is arbitrary,
   // but needs to be unique to the robot (we will choose the value to be 1).
@@ -285,13 +293,13 @@ void renderSceneCallback() {
   glPopName();
   glPopMatrix();
 
-  if (cc) {
-     glPushMatrix();
-     glPushName(4);
-     cc->draw();
-     glPopName();
-     glPopMatrix();
-  }
+  // if (cc) {
+  //    glPushMatrix();
+  //    glPushName(4);
+  //    cc->draw();
+  //    glPopName();
+  //    glPopMatrix();
+  // }
 
   // length of each axis to draw.  For debugging only (remove later).
   // X - red
@@ -612,9 +620,10 @@ static void mousePick(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY) {
     }
   }
 
+  // REMOVE THE OBJECT if allowed
   if (isHit && ans > 1) {
      std::cout << "ans: " << ans << std::endl;
-     removeObjectAtIndex(ans);
+     removeObjectAtIndex(ans-2);
   } else {
      std::cout << "no valid hits\n";
   }
@@ -644,8 +653,22 @@ static void mousePick(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY) {
   //if (pick) pick(min); /* Pass pick event back to application */
 }
 
+// param index is the actual index we wish to remove, (already compensated
+// for the offset).
 void removeObjectAtIndex(int32_t index) {
-   
+   assert(index < objectsInRange.size() && index >= 0);
+   auto it = objectsInRange[index];
+   int32_t x = it->viewCoordinate3D().viewX();
+   int32_t y = it->viewCoordinate3D().viewY();
+   if (it->isDestroyable()) {
+      std::cout << "Destroying object at " << x << ", " << y << std::endl;
+      delete objectsInRange[index];
+      objectsInRange[index] = nullptr;
+      objectGrid[x][y] = nullptr;
+      objectsInRange.erase(objectsInRange.begin()+index);
+   } else {
+      std::cout << "Object at " << x << ", " << y << " is not destroyable\n";
+   }
 }
 
 
@@ -794,7 +817,20 @@ void printGridToConsole() {
 //------------------------------------------------------------------------------
 void populateInRangeVector() {
   // Clear the pointers currently in the vector
-  objectsInRange.clear();
+   std::cout << "populateInRangeVector\n";
+   objectsInRange.clear();
+   
+   // if (!cc && !flag) {
+      
+   //    cc = new Cylinder(Coordinate3D(0, 0, 0));
+   //    objectsInRange.push_back(cc);
+   //    // cc->setScale(1, 2, 1);
+   //    // objectGrid[0][1] = cc;
+      
+   //    flag = true;
+   //    std::cout << "cylinder created\n";
+   // }
+   
 
   // Calculate the boundaries of the for loops, which represent the
   // visual range of the robot, and determines what objects will be drawn

@@ -57,17 +57,21 @@ Robot::Robot(const Coordinate3D& coordinate) : Object(coordinate) {
   }
 
   // configure antenna
+  m_antenna.setPersistent();
   m_antenna.setScale(0.1, 0.4, 0.1);
   m_antenna.setRotate(-90, 1, 0, 0);
   m_antenna.setRotateDelta(0, 0, 0, 1, ROBOT_ANTENNA_ROTATE_DELTA);
 
   // configure eyes
+  m_eyeLeft.setPersistent();
   m_eyeLeft.setScale(0.07, 0.07, 0.07);
   m_eyeLeft.setRotate(180, 0, 1, 0);
+  m_eyeRight.setPersistent();
   m_eyeRight.setScale(0.07, 0.07, 0.07);
   m_eyeRight.setRotate(180, 0, 1, 0);
 
   // configure neck piece
+  m_neck.setPersistent();
   m_neck.setScale(0.25, 0.2, 0.25);
   m_neck.setRotate(-90, 1, 0, 0);
 }
@@ -98,14 +102,14 @@ void Robot::draw() {
   glPushMatrix();
   // glPushName(3);
   glTranslatef(0, 1.3, 0);
-  m_neck.draw();
+  m_neck.drawModified();
   // glPopName();
   glPopMatrix();
 
   // draw antenna
   glPushMatrix();
   glTranslatef(0, 1.9, 0);
-  m_antenna.draw();
+  m_antenna.drawModified();
   glPopMatrix();
 
   // draw eyes
@@ -113,11 +117,11 @@ void Robot::draw() {
   glTranslatef(0, 1.75, -0.35);  // shifting reference frame to eye position
   glPushMatrix();
   glTranslatef(-0.1, 0, 0);  // shift left eye to left
-  m_eyeLeft.draw();
+  m_eyeLeft.drawModified();
   glPopMatrix();  // done left eye
   glPushMatrix();
   glTranslatef(0.1, 0, 0);  // shift right eye to right
-  m_eyeRight.draw();
+  m_eyeRight.drawModified();
   glPopMatrix();  // done right eye
   glPopMatrix();  // done both eyes
   glPopMatrix();  // done drawing head

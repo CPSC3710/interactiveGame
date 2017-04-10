@@ -39,3 +39,7 @@ const Coordinate3D& TriangularPrism::viewCoordinate3D() const
 {
 	return this->m_coordinate3D;
 }
+
+bool TriangularPrism::isDestroyable() const {
+   return true;
+}

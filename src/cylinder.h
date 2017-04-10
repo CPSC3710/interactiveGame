@@ -53,7 +53,9 @@ class Cylinder : public Object {
   // Access:    public
   // Returns:   void
   //--------------------------------------------------------------------------
-  void draw();
+   void draw();
+
+   void drawModified();
 
   //-------------------------------------------------------------------- print
   // Brief Description
@@ -76,7 +78,11 @@ class Cylinder : public Object {
   // Access:    public
   // Returns:   const Coordinate3D&
   //--------------------------------------------------------------------------
-  const Coordinate3D& viewCoordinate3D() const;
+   const Coordinate3D& viewCoordinate3D() const;
+
+   bool isDestroyable() const override;
+
+   void setPersistent();
 
  private:
   GLUquadric* m_quad;
@@ -91,6 +97,8 @@ class Cylinder : public Object {
                                    // modified by the 5th element, the delta),
                                    // axis of rotation x, y, z, then delta angle
                                    // change each update
+
+   bool m_isDestroyable = true;
 };
 
 #endif

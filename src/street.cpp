@@ -21,7 +21,7 @@ void Street::draw()
 {
 	glPushMatrix();
 
-	glScalef(1.0f, 1.0f, 1.0f)
+	glScalef(1.0f, 1.0f, 1.0f);
 
 	glTranslatef(
 		static_cast<float>(this->m_coordinate3D.viewX()),
