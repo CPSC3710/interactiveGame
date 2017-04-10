@@ -251,12 +251,10 @@ void renderSceneCallback()
 	for(uint32_t i = 0; i < objectsInRange.size(); i++)
 	{
 		glPushName(nameIDOffset + i);
-		// std::cout << "drawing objectsInRange[" << i << "]\n";
 		objectsInRange[i]->draw();
 		glPopName();
 	}
 	glPopMatrix();
-
 
 	// DRAW ROBOT
 	// We assign a 'name', for clicking events, to the Robot.  This is arbitrary,
@@ -266,23 +264,6 @@ void renderSceneCallback()
 	theRobot.draw();
 	glPopName();
 	glPopMatrix();
-
-	// length of each axis to draw.  For debugging only (remove later).
-	// X - red
-	// Y - green
-	// Z - blue
-	double len = 2.0;
-	glBegin(GL_LINES);
-	glColor3f(1, 0, 0);
-	glVertex3d(0, 0, 0);
-	glVertex3d(len, 0, 0);
-	glColor3f(0, 1, 0);
-	glVertex3d(0, 0, 0);
-	glVertex3d(0, len, 0);
-	glColor3f(0, 0, 1);
-	glVertex3d(0, 0, 0);
-	glVertex3d(0, 0, len);
-	glEnd();
 
 	int32_t x = theRobot.viewCoordinate3D().viewX();
 	int32_t y = theRobot.viewCoordinate3D().viewY();
@@ -333,30 +314,21 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y)
 {
 	switch(key)
 	{
-		// NOTE: assignment specifies the following key functions:
-		// 'a': at intersection, turn right; else do nothing
-		// 'q': at intersection, turn left; else do nothing
-		// 'z': push the robot forward, if possible (bound check), and update the
-		// camera
-		// since this is confusing as fuck, for now I'm using WASD layout, where 'w'
-		// moves forward, 'a' turns left, and 'd' turns right
-		// can change back later
-
-		case 'd':
+		case 'a':
 		{
 			// at an intersection of the streets, turn the robot to the
 			// right; if not at intersection, do nothing
 			if(!GAME_PAUSED) theRobot.attemptRightTurn();
 			break;
 		}
-		case 'a':
+		case 'q':
 		{
 			// at an intersection of the streets, turn the robot to left;
 			// if not at intersection, do nothing
 			if(!GAME_PAUSED) theRobot.attemptLeftTurn();
 			break;
 		}
-		case 'w':
+		case 'z':
 		{
 			// push the robot forward
 			if(!GAME_PAUSED)
@@ -384,17 +356,21 @@ void keyboardCallback(unsigned char key, int32_t x, int32_t y)
 			break;
 		}
 		// DEBUG============WIREFRAME MODE TOGGLE
+		/*
 		case 'm':
 		{
 			WIREFRAME_MODE = 1 - WIREFRAME_MODE;
 			break;
 		}
+		*/
+		/*
 		case 27:
 		{
 			glutDestroyWindow(WINDOW_ID);
 			exit(1);
 			break;
 		}
+		*/
 		default:
 		{
 			std::cout << "KP: No action for " << key << std::endl;
@@ -699,9 +675,6 @@ void populateGrid()
 {
 	setStreetsAndEmptyLocations();
 	populateBlocks();
-
-	// #TODO_AH test function, remove at some point
-	printGridToConsole();
 }
 
 //-------------------------------------------------- setStreetsAndEmptyLocations
@@ -899,9 +872,6 @@ void populateInRangeVector()
 			}
 		}
 	}
-
-	// #TODO_AH test function, remove at some point
-	printObjectsInRangeToConsole();
 }
 
 //------------------------------------------------- printObjectsInRangeToConsole
