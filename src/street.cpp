@@ -19,7 +19,26 @@ Street::Street(
 //------------------------------------------------------------------------------
 void Street::draw()
 {
+	glPushMatrix();
 
+	glScalef(1.0f, 1.0f, 1.0f)
+
+	glTranslatef(
+		static_cast<float>(this->m_coordinate3D.viewX()),
+		static_cast<float>(this->m_coordinate3D.viewY()),
+		static_cast<float>(this->m_coordinate3D.viewZ()));
+
+	glBegin(GL_QUADS);
+
+	glColor3f(0.7, 0.7, 0.7);
+	glVertex3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+
+	glEnd();
+
+	glPopMatrix();
 }
 
 //------------------------------------------------------------------------ Print
