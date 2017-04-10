@@ -7,6 +7,7 @@ Object::Object(
 
 }
 
-bool Object::isDestroyable() const {
-   return false;
+bool Object::isDestroyable() const
+{
+	return false;
 }

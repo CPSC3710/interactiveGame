@@ -66,11 +66,11 @@ public:
 	// Access:    public 
 	// Returns:   const Coordinate3D&
 	//--------------------------------------------------------------------------
-   const Coordinate3D& viewCoordinate3D() const;
+	const Coordinate3D& viewCoordinate3D() const;
 
-    bool isDestroyable() const override;
+	bool isDestroyable() const override;
 
 private:
-   GLUquadric* m_quad;
+	GLUquadric* m_quad;
 };
 #endif

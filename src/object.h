@@ -18,10 +18,12 @@ public:
 	// Parameter: const Coordinate3D& coordinate
 	//--------------------------------------------------------------------------
 	Object(
-	   const Coordinate3D& coordinate);
+		const Coordinate3D& coordinate);
 
-   virtual ~Object() { }
-   
+	virtual ~Object()
+	{
+
+	}
 
 	//--------------------------------------------------------------------- draw
 	// Brief Description
@@ -55,9 +57,9 @@ public:
 	// Access:    public 
 	// Returns:   const Coordinate3D&
 	//--------------------------------------------------------------------------
-   virtual const Coordinate3D& viewCoordinate3D() const = 0;
+	virtual const Coordinate3D& viewCoordinate3D() const = 0;
 
-   virtual bool isDestroyable() const;
+	virtual bool isDestroyable() const;
 
 protected:
 	Coordinate3D m_coordinate3D;

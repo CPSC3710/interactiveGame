@@ -1,10 +1,7 @@
 CXX = g++11
-# CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall -I /usr/include/
 LIBDIR = /usr/lib/
-# LNFLAGS = -lX11 -lXi -lglut -lGL -lGLU -lm
 LNFLAGS = -lX11 -lXi -lXmu -lglut -lGL -lGLU -lm
-#OBJECTS = object.o robot.o street.o cylinder.o rectangularPrism.o triangularPrism.o coordinate3d.o
 
 EXEC = game
 SOURCES = $(wildcard *.cpp)
